@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.board.study.mapper.LoginMapper">
+
+
+	<resultMap type="com.board.study.model.UserDTO" id="userRs">
+		<result column="user_id" property="userId"/>
+		<result column="password" property="userPw"/>
+		<result column="name" property="userName"/>
+		<result column="phone" property="userPhone"/>
+		<result column="email" property="userEmail"/>
+		<result column="role" property="userRole"/>
+	</resultMap>
+
+	<select id="login" parameterType="map" resultMap="userRs">
+		select
+			id
+			, user_id
+			, password
+			, name
+			, phone
+			, email
+			, role
+		from users
+		where user_id = #{id}
+		and password = #{pass}
+		
+	</select>
+	
+	<select id="loginMap" parameterType="map" resultType="map">
+		select
+			id
+			, user_id
+			, password
+			, name
+			, phone
+			, email
+			, role
+		from users
+		where user_id = #{id}
+		and password = #{pass}
+		
+	</select>
+
+</mapper>

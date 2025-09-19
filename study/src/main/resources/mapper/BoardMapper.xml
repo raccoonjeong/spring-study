@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.study.project.repository.BoardMapper">
+
+	<select id="list" resultType="map">
+		 select 
+		 	board_num, 
+		 	user_id, 
+		 	user_name, 
+		 	board_subject, 
+		 	board_content, 
+		 	reg_date, 
+		 	upt_date,
+		 	view_cnt
+		 from board
+	</select>
+	
+	<insert id="insert" parameterType="map">
+		insert into board
+			(
+		 	user_id, 
+		 	user_name, 
+		 	board_subject, 
+		 	board_content, 
+		 	reg_date, 
+		 	view_cnt)
+			value
+			(
+			#{inputId}, 
+		 	#{inputName}, 
+		 	#{inputSubject}, 
+		 	#{inputContent}, 
+		 	now(),
+		 	0
+			)
+	</insert>
+	<select id="detail" parameterType="int" resultType="map">
+		 select 
+		 	board_num, 
+		 	user_id, 
+		 	user_name, 
+		 	board_subject, 
+		 	board_content, 
+		 	reg_date, 
+		 	upt_date,
+		 	view_cnt
+		 from board
+		 where board_num = #{num}
+	</select>
+	<update id="update" parameterType="map">
+		update board
+			set user_id = #{inputId}
+			, user_name = #{inputName}
+			, board_subject = #{inputSubject}
+			, board_content = #{inputContent}
+			, upt_date = now()
+			where board_num = #{boardNum}
+	</update>
+	
+	<update id="delete" parameterType="map">
+		delete from board
+			where board_num = #{boardNum}
+	</update>
+
+</mapper>
