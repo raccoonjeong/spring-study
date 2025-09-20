@@ -59,7 +59,7 @@ export function BoardDetail() {
       return;
     }
     const formData = {
-      boardNum: num,
+      boardNums: [num],
     };
     try {
       const res = await fetch("http://localhost:8080/delete", {
