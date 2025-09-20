@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.study.project.repository.BoardMapper;
@@ -32,8 +33,10 @@ public class BoardServiceClass implements BoardServiceInter{
 	}
 
 	@Override
+	@Transactional
 	public Map<String, Object> detail(int num) {
-		
+
+		int increaseViewCount = boardMapper.increaseViewCount(num);
 		return boardMapper.detail(num);
 	}
 
@@ -44,9 +47,9 @@ public class BoardServiceClass implements BoardServiceInter{
 	}
 
 	@Override
-	public int delete(Map<String, Object> deleteMap) {
+	public int delete(Map<String, List<Integer>> deleteList) {
 
-		return boardMapper.delete(deleteMap);
+		return boardMapper.delete(deleteList);
 	}
 
 }

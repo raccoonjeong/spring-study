@@ -74,9 +74,9 @@ public class BoardController {
 	
 	@RequestMapping("delete")
 	@ResponseBody
-	public Map<String, Object> delete(@RequestBody Map<String, Object> deleteMap) {
-		int delete = service.delete(deleteMap);
-		Map<String, Object> status = new HashMap<String, Object>();
+	public Map<String, Object> delete(@RequestBody Map<String, List<Integer>> deleteList) {
+		int delete = service.delete(deleteList);
+		Map<String, Object> status = new HashMap<>();
 		
 		if (delete == 0) {
 			status.put("stus", "fail");

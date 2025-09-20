@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface BoardMapper {
@@ -16,6 +17,7 @@ public interface BoardMapper {
 
 	int update(Map<String, Object> updateMap);
 
-	int delete(Map<String, Object> deleteMap);
+	int delete(@Param("deleteList")Map<String, List<Integer>> deleteList);
 
+	int increaseViewCount(int num);
 }
