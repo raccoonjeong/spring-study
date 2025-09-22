@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.study.project.repository.RestBoardMapper">
+
+	<resultMap type="com.study.project.dto.RestBoardDTO" id="RestBoardDTO">
+		<result column="board_num" property="boardNum"></result>
+		<result column="user_id" property="userId"></result>
+		<result column="user_name" property="userName"></result>
+		<result column="board_subject" property="boardSubject"></result>
+		<result column="board_content" property="boardContent"></result>
+		<result column="reg_date" property="regDate"></result>
+		<result column="upt_date" property="uptDate"></result>
+		<result column="view_cnt" property="viewCnt"></result>
+	</resultMap>
+
+
+	<select id="findAll" resultMap="RestBoardDTO">
+		 select
+		 	board_num,
+		 	user_id,
+		 	user_name,
+		 	board_subject,
+		 	board_content,
+		 	reg_date,
+		 	upt_date,
+		 	view_cnt
+		 from board
+	</select>
+
+	<insert id="register" parameterType="com.study.project.dto.RestBoardDTO">
+		insert
+			into board
+			(
+			 	user_id,
+			 	user_name,
+			 	board_subject,
+			 	board_content,
+			 	reg_date,
+			 	view_cnt
+		 	)
+			value
+			(
+				#{userId},
+			 	#{userName},
+			 	#{boardSubject},
+			 	#{boardContent},
+			 	now(),
+			 	0
+			)
+	</insert>
+	<select id="findById" parameterType="int" resultMap="RestBoardDTO">
+		 select
+		 	board_num,
+		 	user_id,
+		 	user_name,
+		 	board_subject,
+		 	board_content,
+		 	reg_date,
+		 	upt_date,
+		 	view_cnt
+		 from board
+		 where board_num = #{num}
+	</select>
+
+	<update id="increaseViewCount" parameterType="int">
+		update
+			board set
+			view_cnt = view_cnt + 1
+			where board_num = #{num}
+	</update>
+
+	<update id="update" parameterType="com.study.project.dto.RestBoardDTO">
+		update
+			board set
+				user_id = #{userId}
+				, user_name = #{userName}
+				, board_subject = #{boardSubject}
+				, board_content = #{boardContent}
+				, upt_date = now()
+			where board_num = #{boardNum}
+	</update>
+
+	<update id="delete" parameterType="list">
+		delete from board
+			where board_num in
+		<foreach collection="list" item="item" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+
+</mapper>

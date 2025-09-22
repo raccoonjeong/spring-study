@@ -36,7 +36,7 @@ public class BoardServiceClass implements BoardServiceInter{
 	@Transactional
 	public Map<String, Object> detail(int num) {
 
-		int increaseViewCount = boardMapper.increaseViewCount(num);
+		boardMapper.increaseViewCount(num);
 		return boardMapper.detail(num);
 	}
 
@@ -47,7 +47,7 @@ public class BoardServiceClass implements BoardServiceInter{
 	}
 
 	@Override
-	public int delete(Map<String, List<Integer>> deleteList) {
+	public int delete(List<Integer> deleteList) {
 
 		return boardMapper.delete(deleteList);
 	}

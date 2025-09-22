@@ -4,6 +4,9 @@ import { Boardlist } from "./components/BoardList";
 import { BoardWrite } from "./components/BoardWrite";
 import { BoardDetail } from "./components/BoardDetail";
 import { Login } from "./components/Login";
+import { RestBoardlist } from "./components/RestBoardList";
+import { RestBoardDetail } from "./components/RestBoardDetail";
+import { RestBoardWrite } from "./components/RestBoardWrite";
 import Welcome from "./components/Welcome";
 
 function App() {
@@ -36,6 +39,22 @@ function App() {
               등록
             </Link>
           </li>
+          <li>
+            <Link
+              to="/rest-list"
+              className="hover:text-yellow-400 font-semibold transition-colors"
+            >
+              REST목록
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/rest-write"
+              className="hover:text-yellow-400 font-semibold transition-colors"
+            >
+              REST등록
+            </Link>
+          </li>
         </ul>
       </nav>
 
@@ -47,6 +66,9 @@ function App() {
           <Route path="/list" element={<Boardlist />}></Route>
           <Route path="/write" element={<BoardWrite />}></Route>
           <Route path="/detail/:num" element={<BoardDetail />}></Route>
+          <Route path="/rest-list" element={<RestBoardlist />}></Route>
+          <Route path="/rest-write" element={<RestBoardWrite />}></Route>
+          <Route path="/rest-detail/:num" element={<RestBoardDetail />}></Route>
           <Route path="*" element={<div>Not found 404</div>}></Route>
         </Routes>
       </div>

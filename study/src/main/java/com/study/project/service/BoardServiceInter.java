@@ -15,6 +15,6 @@ public interface BoardServiceInter {
 
 	int update(Map<String, Object> updateMap);
 
-	int delete(Map<String, List<Integer>> deleteList);
+	int delete(List<Integer> deleteList);
 
 }

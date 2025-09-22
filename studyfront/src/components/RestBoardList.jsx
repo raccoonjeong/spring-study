@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-export function Boardlist() {
+export function RestBoardlist() {
   const [board, setBoard] = useState([]);
   const [deleteNums, setDeleteNums] = useState([]);
   const navigate = useNavigate();
   const handleDetail = function (num) {
-    navigate(`/detail/${num}`);
+    navigate(`/rest-detail/${num}`);
   };
   const handleDeleteNums = (num, isChecked) => {
     if (isChecked) {
@@ -25,8 +25,8 @@ export function Boardlist() {
       boardNums: deleteNums,
     };
     try {
-      const res = await fetch("http://localhost:8080/delete", {
-        method: "POST",
+      const res = await fetch("http://localhost:8080/board", {
+        method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
@@ -47,14 +47,14 @@ export function Boardlist() {
     }
   };
   const boardList = async () => {
-    const res = await fetch("http://localhost:8080/list");
+    const res = await fetch("http://localhost:8080/board");
     const data = await res.json();
     setBoard(data);
   };
 
   const checkAll = function (checked) {
     if (checked) {
-      setDeleteNums(board.map((b) => b.board_num));
+      setDeleteNums(board.map((b) => b.boardNum));
     }
     if (!checked) {
       setDeleteNums([]);
@@ -64,11 +64,6 @@ export function Boardlist() {
   const allChecked = board.length === deleteNums.length;
 
   useEffect(() => {
-    const boardList = async () => {
-      const res = await fetch("http://localhost:8080/list");
-      const data = await res.json();
-      setBoard(data);
-    };
     boardList();
   }, []);
 
@@ -105,8 +100,8 @@ export function Boardlist() {
           {board.map((b) => (
             <tr
               className="hover:bg-gray-200 text-center cursor-pointer"
-              key={`board-${b.board_num}`}
-              onClick={() => handleDetail(b.board_num)}
+              key={`board-${b.boardNum}`}
+              onClick={() => handleDetail(b.boardNum)}
             >
               <td
                 className="border border-gray-300 px-4 py-2"
@@ -114,24 +109,22 @@ export function Boardlist() {
               >
                 <input
                   type="checkbox"
-                  checked={deleteNums.includes(b.board_num)}
+                  checked={deleteNums.includes(b.boardNum)}
                   onChange={(e) =>
-                    handleDeleteNums(b.board_num, e.target.checked)
+                    handleDeleteNums(b.boardNum, e.target.checked)
                   }
                 />
               </td>
+              <td className="border border-gray-300 px-4 py-2">{b.boardNum}</td>
               <td className="border border-gray-300 px-4 py-2">
-                {b.board_num}
-              </td>
-              <td className="border border-gray-300 px-4 py-2">
-                {b.user_name}({b.user_id})
+                {b.user_name}({b.userId})
               </td>
               <td className="border border-gray-300 px-4 py-2 text-left">
-                {b.board_subject}
+                {b.boardSubject}
               </td>
-              <td className="border border-gray-300 px-4 py-2">{b.reg_date}</td>
-              <td className="border border-gray-300 px-4 py-2">{b.upt_date}</td>
-              <td className="border border-gray-300 px-4 py-2">{b.view_cnt}</td>
+              <td className="border border-gray-300 px-4 py-2">{b.regDate}</td>
+              <td className="border border-gray-300 px-4 py-2">{b.uptDate}</td>
+              <td className="border border-gray-300 px-4 py-2">{b.viewCnt}</td>
             </tr>
           ))}
         </tbody>

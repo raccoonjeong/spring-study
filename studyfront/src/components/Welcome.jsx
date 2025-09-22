@@ -10,19 +10,31 @@ export default function Welcome() {
 
     // 레티나 스케일
     const dpr = window.devicePixelRatio || 1;
-    const W = 300,
-      H = 300;
+    const W = 500,
+      H = 500;
     canvas.style.width = W + "px";
     canvas.style.height = H + "px";
     canvas.width = W * dpr;
     canvas.height = H * dpr;
     ctx.scale(dpr, dpr);
 
-    // 움직일 '사각형' 크기/위치
-    const rect = { w: 50, h: 50, x: (W - 50) / 2, y: (H - 50) / 2 };
+    // 움직일 '공룡' 크기/위치
+    const dino = { w: 50, h: 50, x: (W - 50) / 2, y: (H - 50) / 2 };
     const pressed = { left: false, right: false, up: false, down: false };
     const speed = 5;
+    // 고기
 
+    const meat = {
+      w: 50,
+      h: 50,
+      x: (canvas.width - getRandomArbitrary(500, 0)) / 2,
+      y: (canvas.height - getRandomArbitrary(500, 0)) / 2,
+    };
+
+    console.log("meat", meat);
+    function getRandomArbitrary(min, max) {
+      return Math.floor(Math.random() * (max - min) + min);
+    }
     // 이미지 로드
     const img = new Image();
     img.src = "/dino.jpg"; // public/ 에 player.png 넣어두면 /player.png 로 접근
@@ -38,23 +50,36 @@ export default function Welcome() {
         /* fallback 허용 */
       });
 
+    const meatImg = new Image();
+    meatImg.src = "/meat.jpeg"; // public/ 에 player.png 넣어두면 /player.png 로 접근
+    // img.crossOrigin = "anonymous"; // 외부 도메인 이미지면 필요(CORS 허용도 필요)
+
+    // meatImg
+    //   .decode()
+    //   .then(() => {})
+    //   .catch(() => {
+    //     /* fallback 허용 */
+    //   });
+
     function loop() {
       ctx.clearRect(0, 0, W, H);
 
+      ctx.drawImage(meatImg, meat.x, meat.y, meat.w, meat.h);
+
       // 이동
-      if (pressed.right && rect.x < W - rect.w) rect.x += speed;
-      if (pressed.left && rect.x > 0) rect.x -= speed;
-      if (pressed.down && rect.y < H - rect.h) rect.y += speed;
-      if (pressed.up && rect.y > 0) rect.y -= speed;
+      if (pressed.right && dino.x < W - dino.w) dino.x += speed;
+      if (pressed.left && dino.x > 0) dino.x -= speed;
+      if (pressed.down && dino.y < H - dino.h) dino.y += speed;
+      if (pressed.up && dino.y > 0) dino.y -= speed;
 
       // 그리기: 이미지가 준비되면 drawImage, 아니면 테두리 사각형
       if (ready) {
         // 픽셀아트 깨끗하게: 필요시 ↓
         // ctx.imageSmoothingEnabled = false;
-        ctx.drawImage(img, rect.x, rect.y, rect.w, rect.h);
+        ctx.drawImage(img, dino.x, dino.y, dino.w, dino.h);
       } else {
         ctx.strokeStyle = "lightgreen";
-        ctx.strokeRect(rect.x, rect.y, rect.w, rect.h);
+        ctx.strokeRect(dino.x, dino.y, dino.w, dino.h);
       }
 
       rafRef.current = requestAnimationFrame(loop);

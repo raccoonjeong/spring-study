@@ -16,22 +16,24 @@
 	</select>
 	
 	<insert id="insert" parameterType="map">
-		insert into board
+		insert 
+			into board
 			(
-		 	user_id, 
-		 	user_name, 
-		 	board_subject, 
-		 	board_content, 
-		 	reg_date, 
-		 	view_cnt)
+			 	user_id, 
+			 	user_name, 
+			 	board_subject, 
+			 	board_content, 
+			 	reg_date, 
+			 	view_cnt
+		 	)
 			value
 			(
-			#{inputId}, 
-		 	#{inputName}, 
-		 	#{inputSubject}, 
-		 	#{inputContent}, 
-		 	now(),
-		 	0
+				#{inputId}, 
+			 	#{inputName}, 
+			 	#{inputSubject}, 
+			 	#{inputContent}, 
+			 	now(),
+			 	0
 			)
 	</insert>
 	<select id="detail" parameterType="int" resultType="map">
@@ -49,25 +51,27 @@
 	</select>
 
 	<update id="increaseViewCount" parameterType="int">
-		update board
-			set view_cnt = view_cnt + 1
+		update 
+			board set 
+			view_cnt = view_cnt + 1
 			where board_num = #{num}
 	</update>
 
 	<update id="update" parameterType="map">
-		update board
-			set user_id = #{inputId}
-			, user_name = #{inputName}
-			, board_subject = #{inputSubject}
-			, board_content = #{inputContent}
-			, upt_date = now()
+		update 
+			board set 
+				user_id = #{inputId}
+				, user_name = #{inputName}
+				, board_subject = #{inputSubject}
+				, board_content = #{inputContent}
+				, upt_date = now()
 			where board_num = #{boardNum}
 	</update>
 	
 	<update id="delete" parameterType="map">
 		delete from board
 			where board_num in
-		<foreach collection="deleteList.boardNums" item="item" open="(" separator="," close=")">
+		<foreach collection="list" item="item" open="(" separator="," close=")">
 			#{item}
 		</foreach>
 	</update>
