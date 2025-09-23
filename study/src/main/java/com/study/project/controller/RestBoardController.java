@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,13 +17,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.study.project.dto.RestBoardDTO;
-import com.study.project.service.BoardServiceInter;
+import com.study.project.dto.SearchDTO;
 import com.study.project.service.RestBoardServiceInter;
 
 @RestController
 @RequestMapping("/board")
-public class RestBoardController {
 
+public class RestBoardController {
+	private static final Logger log = LoggerFactory.getLogger(RestBoardController.class);
 	private final RestBoardServiceInter service;
 
 	public RestBoardController(RestBoardServiceInter service) {
@@ -31,60 +34,56 @@ public class RestBoardController {
 
 	@GetMapping
 	public List<RestBoardDTO> findAll() {
-		System.out.println("===REST LIST===");
-		List<RestBoardDTO> list = service.findAll();
+		log.info("===REST LIST===");
+		List<RestBoardDTO> list = service.findAll(null);
+
+		return list;
+	}
+
+	@PostMapping("/search")
+	public List<RestBoardDTO> search(@RequestBody SearchDTO searchDTO){
+		log.info("===REST SEARCH===");
+		List<RestBoardDTO> list = service.findAll(searchDTO);
 
 		return list;
 	}
 
 	@GetMapping("/{num}")
-	public RestBoardDTO detail(@PathVariable(name="num") int num) {
-		System.out.println("===REST DETAIL===");
+	public RestBoardDTO read(@PathVariable(name="num") int num) {
+		log.info("===REST DETAIL===");
 		RestBoardDTO board = service.findById(num);
 
 		return board;
 	}
 
 	@PostMapping
-	public Map<String, Object> insert(@RequestBody RestBoardDTO dto) {
+	public Map<String, Object> create(@RequestBody RestBoardDTO dto) {
 
-		System.out.println("===REST INSERT===");
-		int insert = service.register(dto);
+		log.info("===REST INSERT===");
+		int insert = service.create(dto);
 		Map<String, Object> status = new HashMap<String, Object>();
 
-		if (insert == 0) {
-			status.put("stus", "fail");
 
-		} else {
-			status.put("stus", "succ");
-		}
-
+		status.put("stus", insert > 0 ? "succ" : "fail");
 		return status;
 	}
 
 	@PutMapping
 	public Map<String, Object> update(@RequestBody RestBoardDTO updateMap) {
 
-		System.out.println("===REST UPDATE===");
+		log.info("===REST UPDATE===");
 		int update = service.update(updateMap);
 		Map<String, Object> status = new HashMap<String, Object>();
 
-		if (update == 0) {
-			status.put("stus", "fail");
-
-		} else {
-			status.put("stus", "succ");
-		}
+		status.put("stus", update > 0 ? "succ" : "fail");
 
 		return status;
 	}
 
 	@DeleteMapping
-	public Map<String, Object> delete(@RequestBody Map<String, List<Integer>> deleteMap) {
-		System.out.println("===REST DELETE===");
+	public Map<String, Object> delete(@RequestBody List<Integer> deleteList) {
+		log.info("===REST DELETE===");
 		Map<String, Object> status = new HashMap<>();
-
-		List<Integer> deleteList = deleteMap.get("boardNums");
 
 		if(CollectionUtils.isEmpty(deleteList)) {
 			status.put("stus", "fail");
@@ -93,12 +92,7 @@ public class RestBoardController {
 
 		int delete = service.delete(deleteList);
 
-		if (delete == 0) {
-			status.put("stus", "fail");
-
-		} else {
-			status.put("stus", "succ");
-		}
+		status.put("stus", delete > 0 ? "succ" : "fail");
 
 		return status;
 	}

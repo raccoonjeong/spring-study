@@ -80,9 +80,10 @@
 	  <artifactId>mybatis-spring-boot-starter</artifactId>
 	  <version>3.0.3</version> <!-- Spring Boot 3.x용 최신 버전 -->
 	</dependency>
+
   </dependencies>
-  
-  
+
+
 
   <build>
     <plugins>

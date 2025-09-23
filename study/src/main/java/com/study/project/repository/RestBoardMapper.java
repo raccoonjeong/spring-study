@@ -6,13 +6,14 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.study.project.dto.RestBoardDTO;
+import com.study.project.dto.SearchDTO;
 
 @Mapper
 public interface RestBoardMapper {
 
-	List<RestBoardDTO> findAll();
+	List<RestBoardDTO> findAll(SearchDTO searchDTO);
 
-	int register(RestBoardDTO insertMap);
+	int create(RestBoardDTO insertMap);
 
 	RestBoardDTO findById(int num);
 

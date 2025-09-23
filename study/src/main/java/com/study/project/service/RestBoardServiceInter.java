@@ -4,17 +4,20 @@ import java.util.List;
 import java.util.Map;
 
 import com.study.project.dto.RestBoardDTO;
+import com.study.project.dto.SearchDTO;
 
 public interface RestBoardServiceInter {
 
-	List<RestBoardDTO> findAll();
+//	List<RestBoardDTO> findAll();
 
-	int register(RestBoardDTO insertMap);
+	int create(RestBoardDTO insertMap);
 
 	RestBoardDTO findById(int num);
 
 	int update(RestBoardDTO updateMap);
 
 	int delete(List<Integer> deleteList);
+
+	List<RestBoardDTO> findAll(SearchDTO searchDTO);
 
 }

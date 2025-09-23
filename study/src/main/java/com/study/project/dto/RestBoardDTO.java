@@ -1,6 +1,6 @@
 package com.study.project.dto;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class RestBoardDTO {
 
@@ -9,8 +9,8 @@ public class RestBoardDTO {
 	private String userName;
 	private String boardSubject;
 	private String boardContent;
-	private Date regDate;
-	private Date uptDate;
+	private LocalDate regDate;
+	private LocalDate uptDate;
 	private int viewCnt;
 
 	public int getBoardNum() {
@@ -43,16 +43,16 @@ public class RestBoardDTO {
 	public void setBoardContent(String boardContent) {
 		this.boardContent = boardContent;
 	}
-	public Date getRegDate() {
+	public LocalDate getRegDate() {
 		return regDate;
 	}
-	public void setRegDate(Date regDate) {
+	public void setRegDate(LocalDate regDate) {
 		this.regDate = regDate;
 	}
-	public Date getUptDate() {
+	public LocalDate getUptDate() {
 		return uptDate;
 	}
-	public void setUptDate(Date uptDate) {
+	public void setUptDate(LocalDate uptDate) {
 		this.uptDate = uptDate;
 	}
 	public int getViewCnt() {

@@ -13,21 +13,42 @@
 		<result column="view_cnt" property="viewCnt"></result>
 	</resultMap>
 
+	<sql id="board_columns">
+		board_num,
+	 	user_id,
+	 	user_name,
+	 	board_subject,
+	 	board_content,
+	 	reg_date,
+	 	upt_date,
+	 	view_cnt
+ 	</sql>
 
-	<select id="findAll" resultMap="RestBoardDTO">
+	<select id="findAll" resultMap="RestBoardDTO" parameterType="com.study.project.dto.SearchDTO">
 		 select
-		 	board_num,
-		 	user_id,
-		 	user_name,
-		 	board_subject,
-		 	board_content,
-		 	reg_date,
-		 	upt_date,
-		 	view_cnt
+		 	<include refid="board_columns"></include>
 		 from board
+		 <where>
+			 <choose>
+			 	<when test="searchType == 'all'">
+			 	1=1
+			 	</when>
+			 	<when test="searchType == 'name'">
+					user_name like concat('%', #{searchKeyword}, '%')
+			 	</when>
+			 	<when test="searchType == 'subject'">
+					board_subject like concat('%', #{searchKeyword}, '%')
+			 	</when>
+			 </choose>
+			 <choose>
+			 	<when test="startDate != null and endDate != null">
+			 		and reg_date between #{startDate} and #{endDate}
+			 	</when>
+			 </choose>
+		 </where>
 	</select>
 
-	<insert id="register" parameterType="com.study.project.dto.RestBoardDTO">
+	<insert id="create" parameterType="com.study.project.dto.RestBoardDTO">
 		insert
 			into board
 			(
@@ -50,14 +71,7 @@
 	</insert>
 	<select id="findById" parameterType="int" resultMap="RestBoardDTO">
 		 select
-		 	board_num,
-		 	user_id,
-		 	user_name,
-		 	board_subject,
-		 	board_content,
-		 	reg_date,
-		 	upt_date,
-		 	view_cnt
+		 	<include refid="board_columns"></include>
 		 from board
 		 where board_num = #{num}
 	</select>

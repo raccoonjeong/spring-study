@@ -58,14 +58,14 @@ export function RestBoardDetail() {
     if (!confirm("삭제하시겠습니까?")) {
       return;
     }
-    const formData = {
-      boardNums: [num],
-    };
+    // const formData = {
+    //   boardNums: [num],
+    // };
     try {
       const res = await fetch("http://localhost:8080/board", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify([num]),
       });
 
       const data = await res.json();

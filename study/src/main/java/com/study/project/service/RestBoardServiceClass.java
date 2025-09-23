@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.study.project.dto.RestBoardDTO;
+import com.study.project.dto.SearchDTO;
 import com.study.project.repository.RestBoardMapper;
 
 @Service
@@ -19,17 +20,19 @@ public class RestBoardServiceClass implements RestBoardServiceInter {
 		this.boardMapper = boardMapper;
 	}
 
-	@Override
-	public List<RestBoardDTO> findAll() {
 
-		return boardMapper.findAll();
+
+	@Override
+	public List<RestBoardDTO> findAll(SearchDTO searchDTO) {
+
+		return boardMapper.findAll(searchDTO);
 	}
 
 	@Override
 	@ResponseBody
-	public int register(RestBoardDTO insertMap) {
+	public int create(RestBoardDTO insertMap) {
 
-		int insert  = boardMapper.register(insertMap);
+		int insert  = boardMapper.create(insertMap);
 
 		return insert;
 	}
@@ -53,4 +56,5 @@ public class RestBoardServiceClass implements RestBoardServiceInter {
 
 		return boardMapper.delete(deleteList);
 	}
+
 }
