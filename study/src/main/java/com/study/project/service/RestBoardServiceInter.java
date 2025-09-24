@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.study.project.dto.RestBoardDTO;
+import com.study.project.dto.RestPageDTO;
 import com.study.project.dto.SearchDTO;
 
 public interface RestBoardServiceInter {
@@ -19,5 +20,7 @@ public interface RestBoardServiceInter {
 	int delete(List<Integer> deleteList);
 
 	List<RestBoardDTO> findAll(SearchDTO searchDTO);
+
+	RestPageDTO page(SearchDTO searchDTO);
 
 }

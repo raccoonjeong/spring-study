@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 export function RestBoardWrite() {
   const navigate = useNavigate();
@@ -11,6 +11,17 @@ export function RestBoardWrite() {
   const nameRef = useRef();
   const subjectRef = useRef();
   const contentRef = useRef();
+
+  const [fileRows, setFileRows] = useState([]); // [{id:string}, ...]
+  const filesFormRef = useRef(null);
+
+  const addFileRow = () => {
+    setFileRows((prev) => [...prev, { id: crypto.randomUUID() }]); // 고유 id
+  };
+
+  const removeFileRow = (id) => {
+    setFileRows((prev) => prev.filter((r) => r.id !== id));
+  };
 
   const handleInsert = async () => {
     const formData = {
@@ -84,6 +95,33 @@ export function RestBoardWrite() {
           />
         </div>
       </div>
+
+      <div>fileRows::{JSON.stringify(fileRows)}</div>
+      <form ref={filesFormRef} className="mt-4 flex flex-col items-start">
+        <button
+          type="button"
+          onClick={addFileRow}
+          className="bg-orange-500 text-white px-4 py-1 rounded mb-2"
+        >
+          파일추가
+        </button>
+
+        <div className="w-full space-y-2">
+          {fileRows.map((row) => (
+            <div key={row.id} className="flex items-center gap-2">
+              <input type="file" name="files" className="block" />
+              <button
+                type="button"
+                onClick={() => removeFileRow(row.id)}
+                className="text-red-600 border border-red-400 rounded px-2 py-1 text-sm hover:bg-red-50"
+                aria-label="파일 줄 삭제"
+              >
+                ❌
+              </button>
+            </div>
+          ))}
+        </div>
+      </form>
 
       <div className="mt-6 flex justify-center space-x-4">
         <button

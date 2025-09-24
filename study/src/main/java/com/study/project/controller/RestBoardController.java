@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.study.project.dto.RestBoardDTO;
+import com.study.project.dto.RestPageDTO;
+import com.study.project.dto.RestResponseDTO;
 import com.study.project.dto.SearchDTO;
 import com.study.project.service.RestBoardServiceInter;
 
@@ -33,19 +35,42 @@ public class RestBoardController {
 
 
 	@GetMapping
-	public List<RestBoardDTO> findAll() {
+	public RestResponseDTO findAll() {
 		log.info("===REST LIST===");
-		List<RestBoardDTO> list = service.findAll(null);
 
-		return list;
+		SearchDTO searchDTO = new SearchDTO();
+		searchDTO.setCurPage(1);
+		searchDTO.setPageSize(5);
+		searchDTO.setOffset(0);
+
+		List<RestBoardDTO> list = service.findAll(searchDTO);
+		RestPageDTO pageDTO = service.page(searchDTO);
+
+		RestResponseDTO resDTO = new RestResponseDTO();
+		resDTO.setList(list);
+		resDTO.setPage(pageDTO);
+
+		return resDTO;
 	}
 
 	@PostMapping("/search")
-	public List<RestBoardDTO> search(@RequestBody SearchDTO searchDTO){
+	public RestResponseDTO search(@RequestBody SearchDTO searchDTO){
 		log.info("===REST SEARCH===");
-		List<RestBoardDTO> list = service.findAll(searchDTO);
 
-		return list;
+		int curPage = searchDTO.getCurPage();
+		int pageSize = searchDTO.getPageSize();
+		int offset = (curPage - 1) * pageSize;
+
+		searchDTO.setOffset(offset);
+
+		List<RestBoardDTO> list = service.findAll(searchDTO);
+		RestPageDTO pageDTO = service.page(searchDTO);
+
+		RestResponseDTO resDTO = new RestResponseDTO();
+		resDTO.setList(list);
+		resDTO.setPage(pageDTO);
+
+		return resDTO;
 	}
 
 	@GetMapping("/{num}")

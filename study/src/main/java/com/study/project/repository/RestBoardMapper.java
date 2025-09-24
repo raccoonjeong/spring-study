@@ -22,4 +22,6 @@ public interface RestBoardMapper {
 	int delete(List<Integer> deleteList);
 
 	int increaseViewCount(int num);
+
+	int totalCount(SearchDTO searchDTO);
 }

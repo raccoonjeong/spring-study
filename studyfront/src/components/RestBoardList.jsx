@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 
 export function RestBoardlist() {
   const [board, setBoard] = useState([]);
+  const [page, setPage] = useState({});
+  const [pageBlock, setPageBlock] = useState([]);
   const [deleteNums, setDeleteNums] = useState([]);
 
   const searchTypeRef = useRef(null);
@@ -14,6 +16,7 @@ export function RestBoardlist() {
   const handleDetail = function (num) {
     navigate(`/rest-detail/${num}`);
   };
+
   const handleDeleteNums = (num, isChecked) => {
     if (isChecked) {
       setDeleteNums((prev) => (prev.includes(num) ? prev : [...prev, num]));
@@ -50,10 +53,21 @@ export function RestBoardlist() {
       alert("삭제에 실패");
     }
   };
+
   const boardList = async () => {
     const res = await fetch("http://localhost:8080/board");
     const data = await res.json();
-    setBoard(data);
+    setBoard(data.list);
+    pageSetting(data.page);
+  };
+
+  const pageSetting = (page) => {
+    setPage(page);
+    const arr = [];
+    for (let p = page.blockStart; p <= page.blockEnd; p++) {
+      arr.push(p);
+    }
+    setPageBlock(arr);
   };
 
   const checkAll = function (checked) {
@@ -65,7 +79,7 @@ export function RestBoardlist() {
     }
   };
 
-  const handleSearch = async function () {
+  const handleSearch = async function (page) {
     const startDate = startDateRef.current.value;
     const endDate = endDateRef.current.value;
 
@@ -74,6 +88,8 @@ export function RestBoardlist() {
       searchKeyword: searchKeywordRef.current.value,
       startDate: startDate,
       endDate: endDate,
+      curPage: page,
+      pageSize: 5,
     };
 
     // if ((startDate && !endDate) || (!startDate && endDate)) {
@@ -90,7 +106,8 @@ export function RestBoardlist() {
       body: JSON.stringify(formData),
     });
     const data = await res.json();
-    setBoard(data);
+    setBoard(data.list);
+    pageSetting(data.page);
   };
 
   const allChecked = board.length === deleteNums.length;
@@ -177,7 +194,34 @@ export function RestBoardlist() {
           )}
         </tbody>
       </table>
-
+      <div className="flex justify-center space-x-3 py-5">
+        {page.blockStart > 1 && (
+          <span
+            className="border border-gray-400 px-3 py-1 hover:bg-violet-200 cursor-pointer rounded-sm"
+            onClick={() => handleSearch(page.blockStart - 1)}
+          >
+            이전
+          </span>
+        )}
+        {pageBlock.map((p) => (
+          <span
+            className={`border border-gray-400 px-3 py-1 hover:bg-violet-200 cursor-pointer rounded-sm ${
+              p === page.curPage ? "bg-violet-300" : ""
+            }`}
+            onClick={() => handleSearch(p)}
+          >
+            {p}
+          </span>
+        ))}
+        {page.blockEnd < page.totalPages && (
+          <span
+            className="border border-gray-400 px-3 py-1 hover:bg-violet-200 cursor-pointer rounded-sm"
+            onClick={() => handleSearch(page.blockEnd + 1)}
+          >
+            다음
+          </span>
+        )}
+      </div>
       <div className="space-y-3 mt-10">
         {/* 검색 조건 */}
         <div className="flex justify-center items-center gap-2">
@@ -188,6 +232,7 @@ export function RestBoardlist() {
             <option value="all">전 체</option>
             <option value="name">작성자</option>
             <option value="subject">제목</option>
+            <option value="subjectContent">제목+내용</option>
           </select>
 
           <input

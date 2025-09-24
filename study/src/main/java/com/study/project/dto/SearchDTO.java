@@ -1,6 +1,5 @@
 package com.study.project.dto;
 
-import java.sql.Date;
 import java.time.LocalDate;
 
 public class SearchDTO {
@@ -10,6 +9,30 @@ public class SearchDTO {
 	private LocalDate startDate;
 	private LocalDate endDate;
 
+	private int curPage;
+	private int pageSize; // limit
+	private int offset; // offset
+
+
+
+	public int getCurPage() {
+		return curPage;
+	}
+	public void setCurPage(int curPage) {
+		this.curPage = curPage;
+	}
+	public int getPageSize() {
+		return pageSize;
+	}
+	public void setPageSize(int pageSize) {
+		this.pageSize = pageSize;
+	}
+	public int getOffset() {
+		return offset;
+	}
+	public void setOffset(int offset) {
+		this.offset = offset;
+	}
 	public String getSearchType() {
 		return searchType;
 	}
