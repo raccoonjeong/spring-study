@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+      let rootNode= document.getElementById("root");
+      
+      let mystyle={color:"blue", fontSize:"23pt"};  
+      //json 형태임, font-size 형태인 snake표기법은 사용 못함, fontSize형태의 카멜표기법을 사용해야 한다 
+      //변수 선언 
+      ReactDOM.createRoot(rootNode).render(
+        <React.StrictMode>  
+          <h1 style={mystyle}>스타일 적용하기</h1>
+        </React.StrictMode>,
+      );
+   
+    </script>
+
+</body>
+</html>

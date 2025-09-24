@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+      let rootNode= document.getElementById("root");
+      
+      const CounterContext = React.createContext('default value');
+
+      ReactDOM.createRoot(rootNode).render(
+          <React.StrictMode>  
+            <App  />
+          </React.StrictMode>,
+      );
+
+      //부모컴포넌트의 함수를 자식컴포넌트에 전달하기 
+      //데이터는 위에서 아래로
+      //함수는 아래에서 위로 
+      
+//https://velog.io/@velopert/react-context-tutorial
+
+function CounterProvider({ children }) {
+  const [counter, setCounter] = React.useState(1);  //이 값을 변경가능하다. 
+  const actions = React.useMemo(
+    () => ({
+      increase() {
+        setCounter((prev) => prev + 1);
+      },
+      decrease() {
+        setCounter((prev) => prev - 1);
+      }
+    }),
+    []
+  );
+
+  const value = React.useMemo(() => [counter, actions], [counter, actions]);
+
+  return (
+    <CounterContext.Provider value={value}>{children}</CounterContext.Provider>
+  );
+}
+
+
+function useCounter() {
+  const value = React.useContext(CounterContext);
+  if (value === undefined) {
+    throw new Error('useCounterState should be used within CounterProvider');
+  }
+  return value;
+}
+
+function App() {
+  return (
+    <CounterProvider>
+      <div>
+        <Value />
+        <Buttons />
+      </div>
+    </CounterProvider>
+  );
+}
+
+function Value() {
+  const [counter] = useCounter();  //useCounter 로부터 값을 받는다 
+  return <h1>{counter}</h1>;
+}
+
+function Buttons() {
+  const [, actions] = useCounter();//useCounter 로부터 값을 받는다 
+
+  return (
+    <div>
+      <button onClick={actions.increase}>+</button>
+      <button onClick={actions.decrease}>-</button>
+    </div>
+  );
+}
+
+    </script>
+
+</body>
+</html>
+

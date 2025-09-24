@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+      let rootNode= document.getElementById("root");
+      
+      const LogonContext = React.createContext();
+
+      ReactDOM.createRoot(rootNode).render(
+          <React.StrictMode>  
+            <Counter />
+          </React.StrictMode>,
+      );
+
+    //상태와 상태변화가 같은 공간에 있디
+      function Counter() {
+        const [number, setNumber] = useState(0);
+
+        const onIncrease = () => {
+            setNumber(prevNumber => prevNumber + 1);
+        };
+
+        const onDecrease = () => {
+            setNumber(prevNumber => prevNumber - 1);
+        };
+
+        return (
+            <div>
+            <h1>{number}</h1>
+                <button onClick={onIncrease}>+1</button>
+                <button onClick={onDecrease}>-1</button>
+            </div>
+        );
+        }
+
+    //reducer 는 현재 상태와 액션 객체를 파라미터로 받아와서 새로운 상태를 반환해주는 함수입니다.
+    /*
+    원래의 상태 => action(함수) =>다른상태로 전환
+    function reducer(state, action) {
+        // 새로운 상태를 만드는 로직
+        // const nextState = ...
+        return nextState;
+    }
+   */
+   // const [state, dispatch] = useReducer(reducer, initialState);
+
+    //상태변경팜함수들을 묶어놓음 -- 몰아서 한곳에서 한다. 
+    function reducer(state, action) {
+        switch (action.type) {
+            case 'INCREMENT':
+                return state + 1;
+            case 'DECREMENT':
+                return state - 1;
+            default:
+                return state;
+        }
+    }
+
+    function Counter2() {
+        //set함수를 
+        const [number, dispatch] = React.useReducer(reducer, 0); //dispatch에 전달할 함수 , 초기값 
+
+        const onIncrease = () => {
+            dispatch({ type: 'INCREMENT' });
+        };
+
+        const onDecrease = () => {
+            dispatch({ type: 'DECREMENT' });
+        };
+
+        return (
+            <div>
+            <h1>{number}</h1>
+            <button onClick={onIncrease}>+1</button>
+            <button onClick={onDecrease}>-1</button>
+            </div>
+        );
+    }

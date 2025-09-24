@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+      let rootNode= document.getElementById("root");
+     
+      ReactDOM.createRoot(rootNode).render(
+          <React.StrictMode>  
+            <App  />
+          </React.StrictMode>,
+      );
+
+      //부모컴포넌트의 함수를 자식컴포넌트에 전달하기 
+      //데이터는 위에서 아래로
+      //함수는 아래에서 위로 
+      
+
+    function App({title, contents}) {
+        const [userInfo, setUserInfo]=React.useState(
+            {name:"홍길동", phone:"010-0000-0000", email:"kkk@dd.com", address:"서울시"}
+        );
+        
+        const {name, phone, email, address} = userInfo;
+
+        //userInfo 복사후 항목 하나만 변경한다. 
+        //userInfo 메모리에 데이터는 참조값이다 이 참조값 자체가 수정되어야 한다  
+        const nameChange = (e)=>{ setUserInfo({...userInfo, name:e.target.value});}
+        const phoneChange = (e)=>{ setUserInfo({...userInfo, phone:e.target.value});}
+        const emailChange = (e)=>{ setUserInfo({...userInfo, email:e.target.value});}
+        const addressChange = (e)=>{ setUserInfo({...userInfo, address:e.target.value});}
+
+        return(
+            <div>
+                <h1>JSON데이터처리</h1>
+                이름 :     <input type="text"   value={name}   onChange={nameChange}/><br/>
+                전화번호 : <input type="text"   value={phone}  onChange={phoneChange}/><br/>
+                이메일 :   <input type="text"   value={email}  onChange={emailChange}/><br/>
+                주소 :     <input type="text"  value={address} onChange={addressChange}/><br/>
+                
+                
+                <hr/>
+                
+                <h3>{name} {phone} {email} {address}</h3> 
+            </div>
+        )
+    }
+
+    
+
+      
+    </script>
+
+</body>
+</html>
+

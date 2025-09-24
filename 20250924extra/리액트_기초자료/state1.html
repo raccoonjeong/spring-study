@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    ​
+    <script
+      crossorigin
+      src="https://unpkg.com/react@18/umd/react.development.js"
+    ></script>
+    <script
+      crossorigin
+      src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"
+    ></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    ​
+  </head>
+  <body>
+    <h1>state란</h1>
+    <div id="root"></div>
+    ​
+    <script type="text/babel">
+      ReactDOM.render(
+        <div>
+          <MyComponent />
+          <MyComponent />
+        </div>, //첫번째 매개변수 - 트리구조의 태그집합
+        document.getElementById("root") //두번째 매개변수 - 시작 태그 객체
+      );
+
+      //함수기반 컴포넌트 - 이벤트 처리
+      function MyComponent() {
+        //자체적으로 state라는게 있다.
+        //상태정보, 변수들을 state에 저장하고 이 변수값을 바꾸면 state
+        //를 확인해서 바뀐부분만 다시 렌더링을 해준다.
+        //state 가 클래스 기반 컴포넌트에만 존재했음
+        //함수기반컴폰넌트도 있었는데 예전에는 state사용을 못함
+        //자신한테 있었던 일을 알지못한다. 기능이 간단한거는 함수로
+        //복잡한거는 클래스를 사용했다.
+        //3년전에 hook 을 만들었음
+        //state한테 변수만들어라 그리고 그 주소를 주세요
+        //React.useState(초기데이터);  state공간에 초기데이터
+        //저장공간 만들고  변수 주소를 준다.
+        //주소공간의 값을 바꿀 수 있는 함수주소도 준다
+        //변수주소, 함수주소가 온다. 함수명 마음대로 해도 되는데
+        //가급접 set변수명  setName 변수명의 첫글자는 대문자 -카멜표기법을 사용
+        //React.useState(아무타입이나값)
+        //반환값이 [] 첫번째요소는 값이 저장된 공간에 대한 정보
+        //           두번째요소는 값이 저장된 공간에 접근할 수 있는 함수주소
+        const [name, setName] = React.useState("홍길동");
+        const [age, setAge] = React.useState(23);
+        console.log(React.useState(0));
+
+        //코드를 여기다 두면 함수 호출하다 말고  setName함수
+        //무한렌더링 상태가 된다.
+        // setName("임꺽정");
+        // setAge(30);
+        const setValue = () => {
+          setName("임꺽정");
+          setAge(34);
+        };
+
+        return (
+          <div>
+            <h1>
+              {name} {age}
+            </h1>
+            <div>{name + "님의 나이는" + age + " 입니다"}</div>
+            <button type="button" onClick={setValue}>
+              값바꾸기
+            </button>
+          </div>
+        );
+      }
+    </script>
+  </body>
+</html>
+​

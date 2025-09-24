@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+      let rootNode= document.getElementById("root");
+     
+      ReactDOM.createRoot(rootNode).render(
+          <React.StrictMode>  
+            <App  />
+          </React.StrictMode>,
+      );
+
+      //부모컴포넌트의 함수를 자식컴포넌트에 전달하기 
+      //데이터는 위에서 아래로
+      //함수는 아래에서 위로 
+      
+
+    function App({title, contents}) {
+        const [userInfoList, setUserInfoList] = React.useState([]);
+
+        const [userInfo, setUserInfo]=React.useState(
+            {name:"홍길동", phone:"010-0000-0000", email:"kkk@dd.com", address:"서울시"}
+        );
+        
+        const {name, phone, email, address} = userInfo;
+
+        //userInfo 복사후 항목 하나만 변경한다. 
+        //userInfo 메모리에 데이터는 참조값이다 이 참조값 자체가 수정되어야 한다  
+        const onChange = (e)=>{ 
+            let fieldName = e.target.id; 
+            let fieldValue = e.target.value; 
+            userInfo[fieldName] =fieldValue;
+            setUserInfo({...userInfo});//JSON 깊은복사 => 새로운 JSON객체를 전달해야 한다 
+        }
+        
+        const append = ()=>{
+            //arr.push(fruit); //사용불가-, arr 위치의 값이 바뀌어야 한다. 배열은 그대로고 push 함수를 인식못함 
+            setUserInfoList(userInfoList.concat(userInfo));
+            //focusMove.current.focus();
+            setUserInfo({...userInfo, name:"", phone:"", address:"", email:""});
+            window.document.getElementById("name").focus(); //모던스크립트로 접그하려고 한다면 
+            //window를 생략하면 안된다.
+        }
+
+        return(
+            <div>
+                <h1>JSON데이터처리</h1>
+                이름 :     <input type="text" id="name"  value={name}   onChange={onChange}/><br/>
+                전화번호 : <input type="text"  id="phone" value={phone}  onChange={onChange}/><br/>
+                이메일 :   <input type="text"  id="email" value={email}  onChange={onChange}/><br/>
+                주소 :     <input type="text"  id="address" value={address} onChange={onChange}/><br/>
+                
+                <button type="button" onClick={append}>추가</button>
+
+                <hr/>
+                
+                <ul>
+                    {
+                        userInfoList.map( (item, index)=>{
+                            return(
+                                <li key={index} >{item.name} {item.phone} {item.email} {item.address}</li>
+                            )
+                        })
+                    }
+                </ul> 
+            </div>
+        )
+    }
+
+    
+
+      
+    </script>
+
+</body>
+</html>
+

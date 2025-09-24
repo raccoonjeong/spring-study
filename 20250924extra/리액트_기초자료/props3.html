@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+      let rootNode= document.getElementById("root");
+     
+      ReactDOM.createRoot(rootNode).render(
+          <React.StrictMode>  
+            <App  />
+          </React.StrictMode>,
+      );
+
+      //부모컴포넌트의 함수를 자식컴포넌트에 전달하기 
+      //데이터는 위에서 아래로
+      //함수는 아래에서 위로 
+      
+    
+      function App({title, contents}) {
+            
+          const parentFunc = ()=>{
+            alert("parentFunc");
+          }
+
+          return(
+              <div>
+                <ChildComponent1  func={parentFunc}/>
+                <ChildComponent2  func={parentFunc}/>
+              </div>
+          )
+      }
+
+      function ChildComponent1(props) {
+          return(
+              <div>
+                <h1>ChildComponent2</h1>
+                {/* 함수의 주소를 줘야 한다. 괄호가 있으면 함수를 호출한 결과가 전달된다. */}
+                <button type="button" onClick={ props.func }>클릭</button>
+              </div>
+          )
+      }
+
+      function ChildComponent2(props) {
+          return(
+              <div>
+                <h1>ChildComponent1</h1>
+                {/* 함수의 주소를 줘야 한다. 괄호가 있으면 함수를 호출한 결과가 전달된다. */}
+                <button type="button" onClick={ props.func }>클릭</button>
+              </div>
+          )
+      }
+    </script>
+
+</body>
+</html>
+

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        let rootNode= document.getElementById("root");
+        ReactDOM.createRoot(rootNode).render(
+          <React.StrictMode>  
+            <Score name="홍길동" kor="90" eng="80" mat="60"/>
+          </React.StrictMode>,
+        );
+
+      function Score(props) {
+          console.log( props);
+          const [name, setName]=React.useState(props["name"]);
+          const [kor, setKor]=React.useState(props.kor);
+          const [eng, setEng]=React.useState(props.eng);
+          const [mat, setMat]=React.useState(props.mat);
+          const [result, setResult]=React.useState(0);
+
+          function nameChange (e) {  // <- input값으로 text 변경 함수
+               setName(e.target.value);
+          };
+          function korChange (e){  // <- input값으로 text 변경 함수
+               setKor(e.target.value);
+          };
+          function engChange (e){  // <- input값으로 text 변경 함수
+               setEng(e.target.value);
+          };
+          function matChange (e){  // <- input값으로 text 변경 함수
+               setMat(e.target.value);
+          };
+
+          const confirm = ()=>{  setResult(parseInt(kor)+parseInt(eng)+parseInt(mat));     }
+          const reset = ()=>{    setName(""); setKor(0); setEng(0); setMat(0);   }
+
+          return(
+              <div>
+                <h1>{props.name}</h1>
+                name : <input type="text" onChange={nameChange} value={name} /> <br/>
+                kor : <input type="text" onChange={korChange}  value={kor}/> <br/>
+                eng : <input type="text" onChange={engChange}  value={eng}/> <br/>
+                mat : <input type="text" onChange={matChange}  value={mat}/> <br/>
+                <h1>{result}</h1>
+                <button type="button" onClick={confirm}>확인</button>
+                <button type="button" onClick={reset}>리셋</button>
+              </div>
+          )
+      }
+    </script>
+
+</body>
+</html>
+

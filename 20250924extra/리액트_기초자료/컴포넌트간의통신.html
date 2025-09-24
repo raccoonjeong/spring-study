@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+      let rootNode= document.getElementById("root");
+     
+      ReactDOM.createRoot(rootNode).render(
+          <React.StrictMode>  
+            <App  />
+          </React.StrictMode>,
+      );
+
+      //매개변수 전달시 const {title, content} = props;  해체가 일어난다
+      //데이터는 위에서 아래로
+      //함수는 아래에서 위로 
+      
+      let data = [
+                {id:1, todo:"모던스크립트 공부하기"},
+                {id:2, todo:"휴식취하기"},
+                {id:3, todo:"수영경기보기"},
+                {id:4, todo:"영화보기"},
+     ];
+
+      function App({title, contents}) {
+         const [mydata, setMydata] = React.useState(data);
+            
+
+          const append = (todo)=>{
+            let id = mydata.at(-1).id+1;
+            console.log( id , todo);
+            //myData.push( {id:id, todo:todo});
+            //concat - 별개의 메모리를 던진다 
+            setMydata(mydata.concat({id:id, todo:todo}));
+          }
+
+          React.useEffect(()=>{
+
+          }, []);
+
+          return(
+              <div>
+                <ListCom  data={mydata}/>
+                <InputCom func={append}/>
+              </div>
+          )
+      }
+
+      function ListCom(props) {
+          return(
+              <div>
+                <h1>할일목록</h1>
+                <ul>
+                    {
+                        props.data.map( (item)=>{
+                            return (<li key={item.id}>{item.id} {item.todo}</li>)
+                        })
+                    }
+                </ul>
+              </div>
+          )
+      }
+
+      function InputCom(props) {
+        const [todo, setTodo]= React.useState("");
+        const change = (e)=>{
+            setTodo(e.target.value);
+        }
+        const append = ()=>{
+            props.func(todo);
+            setTodo("");
+        }
+        return(
+            <div>
+            <h1>입력을합니다.</h1>
+                <input type="text" value={todo} onChange={change}/>
+                <button type="button" onClick={ append }>클릭</button>
+            </div>
+        )
+      }
+    </script>
+
+</body>
+</html>
+

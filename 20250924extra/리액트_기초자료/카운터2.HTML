@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Parcel Sandbox</title>
+    <meta charset="UTF-8" />
+  </head>
+
+  <body>
+    <div id="counter1">
+        <h2 id="number">0</h2>
+        <div>
+        <button id="increase">+1</button>
+        <button id="decrease">-1</button>
+        </div>
+    </div>
+
+    <div id="counter2">
+        <h2 id="number2">0</h2>
+        <div>
+        <button id="increase2">+1</button>
+        <button id="decrease2">-1</button>
+        </div>
+    </div>
+
+  </body>
+</html>
+
+<script>
+    const number = document.getElementById("number");
+    const increase = document.getElementById("increase");
+    const decrease = document.getElementById("decrease");
+
+    increase.onclick = () => {
+        console.log("increase 가 클릭됨");
+        number.innerHTML = parseInt(number.innerHTML)+1;
+    };
+    decrease.onclick = () => {
+        console.log("decrease 가 클릭됨");
+        number.innerHTML = parseInt(number.innerHTML)-1;
+    };
+
+    const number2 = document.getElementById("number2");
+    const increase2 = document.getElementById("increase2");
+    const decrease2 = document.getElementById("decrease2");
+
+    increase2.onclick = () => {
+        console.log("increase 가 클릭됨");
+        number2.innerHTML = parseInt(number2.innerHTML)+1;
+    };
+    decrease2.onclick = () => {
+        console.log("decrease 가 클릭됨");
+        number2.innerHTML = parseInt(number2.innerHTML)-1;
+    };
+
+</script>
+
