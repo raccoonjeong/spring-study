@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 
-export function RestBoardDetail() {
+export function BoardDetail() {
   const navigate = useNavigate();
   const idRef = useRef();
   const nameRef = useRef();
@@ -14,7 +14,7 @@ export function RestBoardDetail() {
   const [detailData, setDetailData] = useState({});
 
   const goList = () => {
-    navigate("/rest-list");
+    navigate("/legacy/list");
   };
 
   const changeMode = function () {
@@ -26,15 +26,15 @@ export function RestBoardDetail() {
   const handleUpdate = async function () {
     const formData = {
       boardNum: num,
-      userId: idRef.current.value,
-      userName: nameRef.current.value,
-      boardSubject: subjectRef.current.value,
-      boardContent: contentRef.current.value,
+      inputId: idRef.current.value,
+      inputName: nameRef.current.value,
+      inputSubject: subjectRef.current.value,
+      inputContent: contentRef.current.value,
     };
 
     try {
-      const res = await fetch("http://localhost:8080/board", {
-        method: "PUT",
+      const res = await fetch("http://localhost:8080/update", {
+        method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
@@ -47,7 +47,7 @@ export function RestBoardDetail() {
       }
       if (data.stus === "succ") {
         alert("수정에 성공");
-        navigate("/list");
+        navigate("/legacy/list");
       }
     } catch (e) {
       console.error(e.message);
@@ -58,14 +58,14 @@ export function RestBoardDetail() {
     if (!confirm("삭제하시겠습니까?")) {
       return;
     }
-    // const formData = {
-    //   boardNums: [num],
-    // };
+    const formData = {
+      boardNums: [num],
+    };
     try {
-      const res = await fetch("http://localhost:8080/board", {
-        method: "DELETE",
+      const res = await fetch("http://localhost:8080/delete", {
+        method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify([num]),
+        body: JSON.stringify(formData),
       });
 
       const data = await res.json();
@@ -76,7 +76,7 @@ export function RestBoardDetail() {
       }
       if (data.stus === "succ") {
         alert("삭제에 성공");
-        navigate("/rest-list");
+        navigate("/legacy/list");
       }
     } catch (e) {
       console.error(e.message);
@@ -85,7 +85,7 @@ export function RestBoardDetail() {
   };
   useEffect(() => {
     const detail = async () => {
-      const res = await fetch(`http://localhost:8080/board/${num}`);
+      const res = await fetch(`http://localhost:8080/detail/${num}`);
       const data = await res.json();
       console.log("data", data);
       setDetailData(data);
@@ -102,13 +102,13 @@ export function RestBoardDetail() {
           <label className="w-20 font-medium">이름 :</label>
           {!isMode ? (
             <span className="flex-1 px-3 py-2 text-left">
-              {detailData.userName}
+              {detailData.user_name}
             </span>
           ) : (
             <input
               type="text"
               ref={nameRef}
-              defaultValue={detailData.userName}
+              defaultValue={detailData.user_name}
               className="flex-1 border border-gray-400 px-3 py-2 focus:outline-none focus:border-blue-600"
             />
           )}
@@ -118,13 +118,13 @@ export function RestBoardDetail() {
           <label className="w-20 font-medium">아이디 :</label>
           {!isMode ? (
             <span className="flex-1 px-3 py-2 text-left">
-              {detailData.userId}
+              {detailData.user_id}
             </span>
           ) : (
             <input
               type="text"
               ref={idRef}
-              defaultValue={detailData.userId}
+              defaultValue={detailData.user_id}
               className="flex-1 border border-gray-400 px-3 py-2 focus:outline-none focus:border-blue-600"
             />
           )}
@@ -134,13 +134,13 @@ export function RestBoardDetail() {
           <label className="w-20 font-medium">제목 :</label>
           {!isMode ? (
             <span className="flex-1 px-3 py-2 text-left">
-              {detailData.boardSubject}
+              {detailData.board_subject}
             </span>
           ) : (
             <input
               type="text"
               ref={subjectRef}
-              defaultValue={detailData.boardSubject}
+              defaultValue={detailData.board_subject}
               className="flex-1 border border-gray-400 px-3 py-2 focus:outline-none focus:border-blue-600"
             />
           )}
@@ -150,13 +150,13 @@ export function RestBoardDetail() {
           <label className="w-20 font-medium mt-2">내용 :</label>
           {!isMode ? (
             <span className="flex-1 px-3 py-2 text-left">
-              {detailData.boardContent}
+              {detailData.board_content}
             </span>
           ) : (
             <textarea
               rows="6"
               ref={contentRef}
-              defaultValue={detailData.boardContent}
+              defaultValue={detailData.board_content}
               className="flex-1 border border-gray-400 px-3 py-2 focus:outline-none focus:border-blue-600 resize-none"
             />
           )}

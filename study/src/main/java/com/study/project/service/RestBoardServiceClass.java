@@ -1,13 +1,21 @@
 package com.study.project.service;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.study.project.dto.RestBoardDTO;
+import com.study.project.dto.RestFileDTO;
 import com.study.project.dto.RestPageDTO;
 import com.study.project.dto.SearchDTO;
 import com.study.project.repository.RestBoardMapper;
@@ -21,6 +29,8 @@ public class RestBoardServiceClass implements RestBoardServiceInter {
 		this.boardMapper = boardMapper;
 	}
 
+	private String savePath = "C:/workspaceUpload";
+	private final Path uploadRoot = Paths.get(savePath);
 
 
 	@Override
@@ -30,12 +40,59 @@ public class RestBoardServiceClass implements RestBoardServiceInter {
 	}
 
 	@Override
-	@ResponseBody
-	public int create(RestBoardDTO insertMap) {
+	@Transactional
+	public int create(RestBoardDTO dto, List<MultipartFile> fileList) throws Exception{
 
-		int insert  = boardMapper.create(insertMap);
+		List<Path> savedFiles = new ArrayList<Path>();
+		try {
+			// TODO Auto-generated method stub
+			boardMapper.create(dto);
+			Integer boardNum = dto.getBoardNum();
 
-		return insert;
+			if (boardNum == null) {
+				return 0; // ?
+			}
+
+			if (!Files.exists(uploadRoot)) {
+	            Files.createDirectories(uploadRoot);
+	        }
+
+	        if (fileList != null) {
+	            for (MultipartFile f : fileList) {
+	                if (f == null || f.isEmpty()) continue;
+
+	                String realName = Paths.get(Objects.requireNonNull(f.getOriginalFilename())).getFileName().toString();
+	                String saveName = UUID.randomUUID() + "_" + realName;
+	                Path target = uploadRoot.resolve(saveName);
+
+	                // 저장
+	                Files.copy(f.getInputStream(), target, StandardCopyOption.REPLACE_EXISTING);
+
+	                RestFileDTO fileDTO = new RestFileDTO();
+	                fileDTO.setBoardNum(boardNum);
+	                fileDTO.setRealName(realName);
+	                fileDTO.setSaveName(saveName);
+	                fileDTO.setSavePath(savePath);
+
+	                int fileInsert = boardMapper.fileCreate(fileDTO);
+	                if (fileInsert == 0) return 0;
+	            }
+	        }
+
+	        return 1;
+
+		}catch (Exception e) {
+			e.printStackTrace();
+	        // 파일 삭제 (보상 처리)
+	        for (Path p : savedFiles) {
+	            try {
+	            	Files.deleteIfExists(p);
+	            	} catch (IOException ignore) {
+
+	            	}
+	        }
+	        return 0; // 실패
+	    }
 	}
 
 	@Override

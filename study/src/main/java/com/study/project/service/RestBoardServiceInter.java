@@ -1,7 +1,8 @@
 package com.study.project.service;
 
 import java.util.List;
-import java.util.Map;
+
+import org.springframework.web.multipart.MultipartFile;
 
 import com.study.project.dto.RestBoardDTO;
 import com.study.project.dto.RestPageDTO;
@@ -11,7 +12,7 @@ public interface RestBoardServiceInter {
 
 //	List<RestBoardDTO> findAll();
 
-	int create(RestBoardDTO insertMap);
+	int create(RestBoardDTO insertMap, List<MultipartFile> files) throws Exception;
 
 	RestBoardDTO findById(int num);
 

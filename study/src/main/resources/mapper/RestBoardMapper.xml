@@ -58,7 +58,8 @@
 		 limit #{pageSize} offset #{offset}
 	</select>
 
-	<insert id="create" parameterType="com.study.project.dto.RestBoardDTO">
+	<insert id="create" parameterType="com.study.project.dto.RestBoardDTO"
+	useGeneratedKeys="true" keyProperty="boardNum">
 		insert
 			into board
 			(
@@ -78,6 +79,23 @@
 			 	now(),
 			 	0
 			)
+	</insert>
+		<insert id = "fileCreate" parameterType="com.study.project.dto.RestFileDTO">
+		insert into board_file
+		(
+			board_num
+			,real_name
+			,save_name
+			,save_path
+			,file_save_date
+		)
+		values (
+			#{boardNum}
+			, #{realName}
+			, #{saveName}
+			, #{savePath}
+			, now()
+		)
 	</insert>
 	<select id="findById" parameterType="int" resultMap="RestBoardDTO">
 		 select

@@ -4,7 +4,7 @@ import { useRef } from "react";
 export function BoardWrite() {
   const navigate = useNavigate();
   const goList = () => {
-    navigate("/list");
+    navigate("/legacy/list");
   };
 
   const idRef = useRef();
@@ -35,7 +35,7 @@ export function BoardWrite() {
       }
       if (data.stus === "succ") {
         alert("등록에 성공");
-        navigate("/list");
+        navigate("/legacy/list");
       }
     } catch (e) {
       console.error(e.message);

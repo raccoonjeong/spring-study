@@ -9,12 +9,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.study.project.dto.RestBoardDTO;
 import com.study.project.dto.RestPageDTO;
@@ -82,10 +85,12 @@ public class RestBoardController {
 	}
 
 	@PostMapping
-	public Map<String, Object> create(@RequestBody RestBoardDTO dto) {
+	public Map<String, Object> create(@ModelAttribute RestBoardDTO dto,
+			@RequestPart(value="files", required=false) List<MultipartFile> files) throws Exception {
 
 		log.info("===REST INSERT===");
-		int insert = service.create(dto);
+
+		int insert = service.create(dto, files);
 		Map<String, Object> status = new HashMap<String, Object>();
 
 

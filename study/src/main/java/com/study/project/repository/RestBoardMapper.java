@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.study.project.dto.RestBoardDTO;
+import com.study.project.dto.RestFileDTO;
 import com.study.project.dto.SearchDTO;
 
 @Mapper
@@ -24,4 +25,6 @@ public interface RestBoardMapper {
 	int increaseViewCount(int num);
 
 	int totalCount(SearchDTO searchDTO);
+
+	int fileCreate(RestFileDTO fileDTO);
 }

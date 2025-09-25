@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 export function RestBoardWrite() {
   const navigate = useNavigate();
   const goList = () => {
-    navigate("/rest-list");
+    navigate("/rest/list");
   };
 
   const idRef = useRef();
@@ -23,19 +23,48 @@ export function RestBoardWrite() {
     setFileRows((prev) => prev.filter((r) => r.id !== id));
   };
 
+  const handleFileCheck = (e) => {
+    const url = window.URL || window.webkitURL;
+    const file = e.target.files[0];
+    const fileName = file.name.split(".").pop().toLowerCase();
+    const allowExt = ["jpg", "png", "gif"];
+
+    if (!allowExt.includes(fileName)) {
+      alert("이미지 파일만 가능합니다.");
+      e.target.value = "";
+    } else {
+      // size 체크
+      const img = new Image();
+      img.src = url.createObjectURL(file);
+      img.onload = () => {
+        if (img.width > 200 || img.height > 200) {
+          alert("사이즈는 200px X 200px 이하만 첨부 가능함");
+          e.target.value = "";
+        }
+      };
+    }
+  };
+
   const handleInsert = async () => {
-    const formData = {
-      userId: idRef.current.value,
-      userName: nameRef.current.value,
-      boardSubject: subjectRef.current.value,
-      boardContent: contentRef.current.value,
-    };
+    const formData = new FormData();
+    formData.append("userId", idRef.current.value);
+    formData.append("userName", nameRef.current.value);
+    formData.append("boardSubject", subjectRef.current.value);
+    formData.append("boardContent", contentRef.current.value);
+
+    const inputs = filesFormRef.current.querySelectorAll('input[name="files"]');
+    inputs.forEach((inp) => {
+      if (inp.files && inp.files[0]) {
+        formData.append("files", inp.files[0]);
+      }
+    });
 
     try {
       const res = await fetch("http://localhost:8080/board", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        // headers: { "Content-Type": "application/json" },
+        // body: JSON.stringify(formData),
+        body: formData,
       });
 
       const data = await res.json();
@@ -46,7 +75,7 @@ export function RestBoardWrite() {
       }
       if (data.stus === "succ") {
         alert("등록에 성공");
-        navigate("/rest-list");
+        navigate("/rest/list");
       }
     } catch (e) {
       console.error(e.message);
@@ -109,7 +138,12 @@ export function RestBoardWrite() {
         <div className="w-full space-y-2">
           {fileRows.map((row) => (
             <div key={row.id} className="flex items-center gap-2">
-              <input type="file" name="files" className="block" />
+              <input
+                type="file"
+                onChange={handleFileCheck}
+                name="files"
+                className="block"
+              />
               <button
                 type="button"
                 onClick={() => removeFileRow(row.id)}

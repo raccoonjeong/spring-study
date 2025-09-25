@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
-export function RestBoardlist() {
+export function RestBoardList() {
   const [board, setBoard] = useState([]);
   const [page, setPage] = useState({});
   const [pageBlock, setPageBlock] = useState([]);
@@ -14,7 +14,7 @@ export function RestBoardlist() {
 
   const navigate = useNavigate();
   const handleDetail = function (num) {
-    navigate(`/rest-detail/${num}`);
+    navigate(`/rest/detail/${num}`);
   };
 
   const handleDeleteNums = (num, isChecked) => {
@@ -93,7 +93,7 @@ export function RestBoardlist() {
     };
 
     // if ((startDate && !endDate) || (!startDate && endDate)) {
-    if (!startDate ^ !endDate) {
+    if (Boolean(startDate) !== Boolean(endDate)) {
       alert("시작일 종료일 모두 입력하세요");
       return;
     }
@@ -203,8 +203,9 @@ export function RestBoardlist() {
             이전
           </span>
         )}
-        {pageBlock.map((p) => (
+        {pageBlock.map((p, i) => (
           <span
+            key={i}
             className={`border border-gray-400 px-3 py-1 hover:bg-violet-200 cursor-pointer rounded-sm ${
               p === page.curPage ? "bg-violet-300" : ""
             }`}
@@ -243,7 +244,7 @@ export function RestBoardlist() {
           />
 
           <button
-            onClick={handleSearch}
+            onClick={() => handleSearch(1)}
             className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
           >
             검색

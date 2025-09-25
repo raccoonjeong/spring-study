@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-export function Boardlist() {
+export function BoardList() {
   const [board, setBoard] = useState([]);
   const [deleteNums, setDeleteNums] = useState([]);
   const navigate = useNavigate();
   const handleDetail = function (num) {
-    navigate(`/detail/${num}`);
+    navigate(`/legacy/detail/${num}`);
   };
   const handleDeleteNums = (num, isChecked) => {
     if (isChecked) {

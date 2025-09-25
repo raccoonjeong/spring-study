@@ -12,7 +12,15 @@ public class RestBoardDTO {
 	private LocalDate regDate;
 	private LocalDate uptDate;
 	private int viewCnt;
-
+//	private List<MultipartFile> files;
+//
+//
+//	public List<MultipartFile> getFiles() {
+//		return files;
+//	}
+//	public void setFiles(List<MultipartFile> files) {
+//		this.files = files;
+//	}
 	public int getBoardNum() {
 		return boardNum;
 	}
