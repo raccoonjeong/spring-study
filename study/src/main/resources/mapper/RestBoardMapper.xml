@@ -81,7 +81,7 @@
 			)
 	</insert>
 		<insert id = "fileCreate" parameterType="com.study.project.dto.RestFileDTO">
-		insert into board_file
+		insert into board_file22
 		(
 			board_num
 			,real_name
@@ -97,6 +97,26 @@
 			, now()
 		)
 	</insert>
+
+	<select id="read" parameterType="int" resultMap="RestBoardDTO">
+		 select
+		 	<include refid="board_columns"></include>
+		 from board
+		 where board_num = #{num}
+	</select>
+
+	<select id="findFile" parameterType="int" resultType="com.study.project.dto.RestFileDTO">
+		select
+			file_num as fileNum,
+			board_num as boardNum,
+			real_name as realName,
+			save_name as saveName,
+			save_path as savePath,
+			file_save_date
+		from board_file
+		where board_num = #{num}
+	</select>
+
 	<select id="findById" parameterType="int" resultMap="RestBoardDTO">
 		 select
 		 	<include refid="board_columns"></include>

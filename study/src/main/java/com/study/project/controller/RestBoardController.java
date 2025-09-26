@@ -1,5 +1,10 @@
 package com.study.project.controller;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -7,6 +12,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -20,10 +26,13 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.study.project.dto.RestBoardDTO;
+import com.study.project.dto.RestFileDTO;
 import com.study.project.dto.RestPageDTO;
 import com.study.project.dto.RestResponseDTO;
 import com.study.project.dto.SearchDTO;
 import com.study.project.service.RestBoardServiceInter;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("/board")
@@ -77,11 +86,45 @@ public class RestBoardController {
 	}
 
 	@GetMapping("/{num}")
-	public RestBoardDTO read(@PathVariable(name="num") int num) {
+	public Map<String, Object> read(@PathVariable(name="num") int num) {
 		log.info("===REST DETAIL===");
-		RestBoardDTO board = service.findById(num);
 
-		return board;
+		Map<String, Object> dataMap = new HashMap<String, Object>();
+
+		RestBoardDTO boardDto = service.read(num);
+		List<RestFileDTO> listFile = service.findFile(num);
+
+		dataMap.put("boardDto", boardDto);
+		dataMap.put("listFile", listFile);
+
+//		RestBoardDTO board = service.findById(num);
+
+		return dataMap;
+	}
+
+	@PostMapping("fileDownload")
+	public void fileDownload(@RequestBody RestFileDTO fileDTO, HttpServletResponse response) throws IOException{
+
+
+		File f = new File(fileDTO.getSavePath(), fileDTO.getSaveName());
+
+		if(!f.exists()) {
+			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+	        return;
+
+		}
+        // file 다운로드 설정
+		response.setContentType("application/octet-stream");
+	    response.setHeader("Content-Disposition", "attachme0nt; filename=\""
+	                       + URLEncoder.encode(fileDTO.getRealName(), "UTF-8") + "\"");
+        // response 객체를 통해서 서버로부터 파일 다운로드
+        OutputStream os = response.getOutputStream();
+        // 파일 입력 객체 생성
+        FileInputStream fis = new FileInputStream(f);
+        FileCopyUtils.copy(fis, os);
+        fis.close();
+        os.close();
+
 	}
 
 	@PostMapping

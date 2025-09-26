@@ -27,4 +27,8 @@ public interface RestBoardMapper {
 	int totalCount(SearchDTO searchDTO);
 
 	int fileCreate(RestFileDTO fileDTO);
+
+	RestBoardDTO read(int num);
+
+	List<RestFileDTO> findFile(int num);
 }

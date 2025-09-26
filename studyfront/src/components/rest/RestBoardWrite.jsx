@@ -36,6 +36,9 @@ export function RestBoardWrite() {
       // size 체크
       const img = new Image();
       img.src = url.createObjectURL(file);
+
+      console.log("img.src", img.src);
+
       img.onload = () => {
         if (img.width > 200 || img.height > 200) {
           alert("사이즈는 200px X 200px 이하만 첨부 가능함");

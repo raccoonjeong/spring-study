@@ -12,6 +12,7 @@ export function RestBoardDetail() {
 
   const { num } = useParams();
   const [detailData, setDetailData] = useState({});
+  const [files, setFiles] = useState([]);
 
   const goList = () => {
     navigate("/rest/list");
@@ -83,12 +84,40 @@ export function RestBoardDetail() {
       alert("삭제에 실패");
     }
   };
+
+  const handleDownload = async (file) => {
+    const formData = {
+      realName: file.realName,
+      saveName: file.saveName,
+      savePath: file.savePath,
+    };
+
+    const res = await fetch("http://localhost:8080/board/fileDownload", {
+      method: "POST", // 데이터 삽입은 보통 POST 방식으로
+      headers: {
+        "Content-Type": "application/json", // 데이터 타입을 JSON으로 설정
+      },
+      body: JSON.stringify(formData), // 데이터를 JSON 형식으로 문자열화
+    });
+
+    const blob = await res.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = file.realName || "download"; // 서버의 real_name 사용
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+  };
+
   useEffect(() => {
     const detail = async () => {
       const res = await fetch(`http://localhost:8080/board/${num}`);
       const data = await res.json();
-      console.log("data", data);
-      setDetailData(data);
+      console.log("data", data.boardDto);
+      setDetailData(data.boardDto);
+      setFiles(data.listFile);
     };
     detail();
   }, [num]);
@@ -96,7 +125,7 @@ export function RestBoardDetail() {
   return (
     <div className="max-w-2xl mx-auto p-6">
       <h2 className="text-2xl font-bold mb-6 text-center">게시글 등록</h2>
-
+      <div> {JSON.stringify(files)}</div>
       <div className="space-y-4">
         <div className="flex items-center">
           <label className="w-20 font-medium">이름 :</label>
@@ -144,6 +173,20 @@ export function RestBoardDetail() {
               className="flex-1 border border-gray-400 px-3 py-2 focus:outline-none focus:border-blue-600"
             />
           )}
+        </div>
+
+        <div className="text-left mt-3">
+          <p>첨부파일</p>
+          {files &&
+            files.map((file, i) => (
+              <p
+                key={i}
+                onClick={() => handleDownload(file)}
+                className="text-blue-400 cursor-pointer hover:text-blue-600"
+              >
+                {file.realName}
+              </p>
+            ))}
         </div>
 
         <div className="flex items-start">

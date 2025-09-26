@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import javax.management.RuntimeErrorException;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -64,7 +66,7 @@ public class RestBoardServiceClass implements RestBoardServiceInter {
 	                String realName = Paths.get(Objects.requireNonNull(f.getOriginalFilename())).getFileName().toString();
 	                String saveName = UUID.randomUUID() + "_" + realName;
 	                Path target = uploadRoot.resolve(saveName);
-
+	                savedFiles = List.of(target); // 추가함
 	                // 저장
 	                Files.copy(f.getInputStream(), target, StandardCopyOption.REPLACE_EXISTING);
 
@@ -88,7 +90,6 @@ public class RestBoardServiceClass implements RestBoardServiceInter {
 	            try {
 	            	Files.deleteIfExists(p);
 	            	} catch (IOException ignore) {
-
 	            	}
 	        }
 	        return 0; // 실패
@@ -144,6 +145,17 @@ public class RestBoardServiceClass implements RestBoardServiceInter {
 		pageDTO.setBlockEnd(blockEnd);
 
 		return pageDTO;
+	}
+
+	@Override
+	public RestBoardDTO read(int num) {
+		return boardMapper.read(num);
+
+	}
+
+	@Override
+	public List<RestFileDTO> findFile(int num) {
+		return boardMapper.findFile(num);
 	}
 
 }
