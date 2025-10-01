@@ -79,7 +79,7 @@ public class ApprovalController {
 		return response;
 	}
 
-	@PatchMapping("/approve")
+	@PatchMapping("/process-approval")
 	public ResponseDTO<Void> approve(@RequestBody ApprovalActionDTO action) {
 
 		ResponseDTO<Void> response = new ResponseDTO<>();

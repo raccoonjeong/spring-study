@@ -3,7 +3,10 @@ import { useState, useEffect } from "react";
 import {
   getNextStatusByApprove,
   getNextStatusByReject,
-} from "../common/statusCode";
+  isPendingApproval,
+  isInApproval,
+  isApproved,
+} from "../common/commonCode";
 import { useAuth } from "../hooks/AuthContext";
 
 export function ApprovalDetail() {
@@ -22,27 +25,32 @@ export function ApprovalDetail() {
     }
   };
 
-  const reject = function () {};
+  const processApproval = async function (getNextStatus) {
+    try {
+      const nextStatusCode = getNextStatus(item.statusCode, user.levelNo);
 
-  const approve = async function () {
-    if (!confirm("결재 요청 하시겠습니까?")) {
-      return;
-    }
-    debugger;
-    const fetched = await fetch(`http://localhost:8080/approval/approve`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        num: num,
-        approverId: user.userId, // TODO: 임시 list측에선 approver_id, history측에선 procId
-        statusCode: getNextStatusByApprove(item.statusCode, user.levelNo),
-      }),
-    });
-    const result = await fetched.json();
-
-    if (result.status === "succ") {
-      alert("결재 요청되었습니다."); //TODO: 임시저장일때만 결재'요청'이라고 해야함.
-      getApprovalItem();
+      if (!confirm(`${nextStatusCode.guideWord}하시겠습니까?`)) {
+        return;
+      }
+      const fetched = await fetch(
+        `http://localhost:8080/approval/process-approval`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            num: num,
+            approverId: user.userId,
+            statusCode: nextStatusCode.code,
+          }),
+        }
+      );
+      const result = await fetched.json();
+      if (result.status === "succ") {
+        alert(`${nextStatusCode.guideWord}되었습니다.`);
+        getApprovalItem();
+      }
+    } catch (err) {
+      alert(err.message);
     }
   };
 
@@ -84,7 +92,7 @@ export function ApprovalDetail() {
                   <input
                     type="checkbox"
                     disabled
-                    checked
+                    checked={isPendingApproval(item.statusCode)}
                     className="h-5 w-5 rounded border-stone-300 text-amber-600 focus:ring-amber-500"
                   />
                 </td>
@@ -92,7 +100,7 @@ export function ApprovalDetail() {
                   <input
                     type="checkbox"
                     disabled
-                    checked
+                    checked={isInApproval(item.statusCode)}
                     className="h-5 w-5 rounded border-stone-300 text-blue-600 focus:ring-blue-500"
                   />
                 </td>
@@ -100,6 +108,7 @@ export function ApprovalDetail() {
                   <input
                     type="checkbox"
                     disabled
+                    checked={isApproved(item.statusCode)}
                     className="h-5 w-5 rounded border-stone-300 text-green-600 focus:ring-green-500"
                   />
                 </td>
@@ -177,13 +186,13 @@ export function ApprovalDetail() {
               임시저장
             </button>
             <button
-              onClick={reject}
+              onClick={() => processApproval(getNextStatusByReject)}
               className="rounded-lg bg-blue-900 px-4 py-2 text-sm text-white hover:opacity-90"
             >
               반려
             </button>
             <button
-              onClick={approve}
+              onClick={() => processApproval(getNextStatusByApprove)}
               className="rounded-lg bg-green-900 px-4 py-2 text-sm text-white hover:opacity-90"
             >
               결재

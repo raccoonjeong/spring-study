@@ -4,6 +4,7 @@
 
 	<select id="getApprovalItems" resultType="com.hye.approvals.dto.ApprovalItemDTO">
 		select
+			ROW_NUMBER() OVER (ORDER BY num) as row_num,
 			num,
 			writer_id,
 			title,
@@ -14,7 +15,9 @@
 			li.status_code,
             stat.status_name,
             emp.emp_name as writer,
-            emp2.emp_name as approver
+            emp2.emp_name as approver,
+            (select position_name from positions where position_cd = emp2.position_cd)
+            	as approver_position_name
  		from approval_list li
 			inner join approval_status stat
 				on li.status_code = stat.status_code
@@ -22,6 +25,8 @@
     			on li.writer_id = emp.user_id
     		left outer join approval_emp emp2
     			on li.approver_id = emp2.user_id
+    	order by
+    		li.num desc
 	</select>
 
 	<select id="getApprovalItem" parameterType="int" resultType="com.hye.approvals.dto.ApprovalItemDTO">
@@ -41,7 +46,6 @@
 	</select>
 
 	<select id="getApprovalHistories" parameterType="int" resultType="com.hye.approvals.dto.ApprovalHistoryDTO">
-
 		select
 			his_num,
 			approval_num,
@@ -63,7 +67,6 @@
 				on his.status_code = stat.status_code
 		where approval_num = #{num}
 		order by his_num asc;
-
 	</select>
 
 	<select id="getNextNumber">

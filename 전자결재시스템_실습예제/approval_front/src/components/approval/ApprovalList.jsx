@@ -56,17 +56,22 @@ export function ApprovalList() {
 
           <tbody className="[&>tr:hover]:bg-stone-50 text-center">
             {approvalItems.length > 0 ? (
-              approvalItems.map((item) => (
+              approvalItems.map((item, index) => (
                 <tr
                   className="border-t border-stone-200"
                   onClick={() => goDetail(item.num)}
+                  key={index}
                 >
-                  <td className="px-4 py-3">{item.num}</td>
+                  <td className="px-4 py-3">{item.rowNum}</td>
                   <td className="px-4 py-3">{item.writer}</td>
                   <td className="px-4 py-3">{item.title}</td>
                   <td className="px-4 py-3">{item.regDate}</td>
-                  <td className="px-4 py-3">{item.approver || "-"}</td>
                   <td className="px-4 py-3">{item.apprDate || "-"}</td>
+                  <td className="px-4 py-3">
+                    {item.approver
+                      ? `${item.approver}(${item.approverPositionName})`
+                      : "-"}
+                  </td>
                   <td className="px-4 py-3 text-stone-700">
                     {item.statusName}
                   </td>

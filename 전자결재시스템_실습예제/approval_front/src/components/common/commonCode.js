@@ -13,43 +13,60 @@ const POSITION_CODES = [
   { code: "pm", value: "부장", level: 4 },
 ];
 
-const findStatusObjectByCode = function (code) {
-  return STATUS_CODES.find((stat) => stat.code === code);
+export const isPendingApproval = function (statusCode) {
+  return ["PND", "APR", "CMP"].includes(statusCode);
 };
 
-const findPositionObjectByCode = function (code) {
-  return POSITION_CODES.find((po) => po.code === code);
+export const isInApproval = function (statusCode) {
+  return ["APR", "CMP"].includes(statusCode);
+};
+
+export const isApproved = function (statusCode) {
+  return ["CMP"].includes(statusCode);
 };
 
 export const getNextStatusByApprove = function (currentStatus, levelNo) {
   //   const position = findPositionObjectByCode(positionCd);
 
   if (!currentStatus || !levelNo) {
-    throw new Error();
+    throw new Error("권한이 없습니다.");
   }
 
-  if (currentStatus === "TMP") {
-    return "PND"; // 임시저장 -> 결재대기
+  if (currentStatus === "-") {
+    return { code: "TMP", guideWord: "임시 저장" };
+  }
+
+  if (currentStatus === "TMP" || currentStatus === "REJ") {
+    return { code: "PND", guideWord: "결재 요청" }; // 임시저장 -> 결재대기
   }
   if (currentStatus === "PND") {
     if (levelNo < 3) {
-      throw new Error();
+      throw new Error("권한이 없습니다.");
     }
-    return "APR"; // 결재대기 -> 결재중 TODO: 권한체크필요 과장 부장 가능
+    return { code: "APR", guideWord: "결재" }; // 결재대기 -> 결재중 TODO: 권한체크필요 과장 부장 가능
   }
   if (currentStatus === "APR") {
     if (levelNo < 4) {
-      throw new Error();
+      throw new Error("권한이 없습니다.");
     }
-    return "CMP"; // 결재중 -> 결재완료 TODO: 권한체크필요 부장 가능
+    return { code: "CMP", guideWord: "결재" }; // 결재중 -> 결재완료 TODO: 권한체크필요 부장 가능
   }
 };
 
-export const getNextStatusByReject = function (levelNo) {
+export const getNextStatusByReject = function (currentStatus, levelNo) {
   if (levelNo < 4) {
-    throw new Error();
+    throw new Error("권한이 없습니다.");
   }
-  return "REJ"; // 부장 가능
+
+  if (currentStatus === "REJ") {
+    throw new Error("이미 반려되었습니다.");
+  }
+
+  if (currentStatus === "CMP") {
+    throw new Error("결재 완료된 서류입니다. 반려 불가능합니다.");
+  }
+
+  return { code: "REJ", guideWord: "반려" }; // 부장 가능
 };
 
 /**

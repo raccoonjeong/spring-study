@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "../hooks/AuthContext";
+import { getNextStatusByApprove } from "../common/commonCode";
 
 export function ApprovalForm() {
   const navigate = useNavigate();
@@ -17,22 +18,33 @@ export function ApprovalForm() {
       setNextVal(result.data);
     }
   };
-  const temporalSave = async function () {
+  const save = async function (code) {
     const title = titleRef.current.value;
     const content = contentRef.current.value;
     const writerId = user.userId;
-    const statusCode = "TMP"; // TODO: 임시
-    // new ApprovalHistoryDTO(approvalNum, item.getWriterId(), item.getStatusCode());
+    try {
+      const status = getNextStatusByApprove(code, user.levelNo);
 
-    const fetched = await fetch("http://localhost:8080/approval", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title, content, writerId, statusCode }),
-    });
-    const result = await fetched.json();
-    if (result.status === "succ") {
-      alert("임시저장되었습니다.");
-      navigate("/list");
+      if (!confirm(`${status.guideWord}하시겠습니까?`)) {
+        return;
+      }
+      const fetched = await fetch("http://localhost:8080/approval", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title,
+          content,
+          writerId,
+          statusCode: status.code,
+        }),
+      });
+      const result = await fetched.json();
+      if (result.status === "succ") {
+        alert(`${status.guideWord}되었습니다.`);
+        navigate("/list");
+      }
+    } catch (err) {
+      alert(err.message);
     }
   };
 
@@ -46,58 +58,6 @@ export function ApprovalForm() {
       <h1 className="mb-6 text-center text-2xl font-bold text-stone-900">
         결재 등록
       </h1>
-
-      {/* 결재 상태 선택 (테이블) */}
-      <div className="mb-8 rounded-xl border border-stone-200 bg-white shadow-sm">
-        <div className="border-b border-stone-100 px-5 py-3">
-          <h2 className="text-base font-semibold text-stone-900">결재 상태</h2>
-        </div>
-
-        <div className="overflow-x-auto px-5 py-5">
-          <table className="min-w-full border-collapse border border-stone-200 text-center">
-            <thead className="bg-stone-50">
-              <tr>
-                <th className="border border-stone-200 px-4 py-3 text-sm font-semibold text-stone-700">
-                  결재대기
-                </th>
-                <th className="border border-stone-200 px-4 py-3 text-sm font-semibold text-stone-700">
-                  결재중
-                </th>
-                <th className="border border-stone-200 px-4 py-3 text-sm font-semibold text-stone-700">
-                  결재완료
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="border border-stone-200 px-4 py-4">
-                  <input
-                    type="checkbox"
-                    disabled
-                    checked
-                    className="h-5 w-5 rounded border-stone-300 text-amber-600 focus:ring-amber-500"
-                  />
-                </td>
-                <td className="border border-stone-200 px-4 py-4">
-                  <input
-                    type="checkbox"
-                    disabled
-                    checked
-                    className="h-5 w-5 rounded border-stone-300 text-blue-600 focus:ring-blue-500"
-                  />
-                </td>
-                <td className="border border-stone-200 px-4 py-4">
-                  <input
-                    type="checkbox"
-                    disabled
-                    className="h-5 w-5 rounded border-stone-300 text-green-600 focus:ring-green-500"
-                  />
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
 
       {/* 카드: 기본 정보 입력 */}
       <div className="mb-8 rounded-xl border border-stone-200 bg-white shadow-sm">
@@ -165,14 +125,17 @@ export function ApprovalForm() {
             </button>
             <button
               className="rounded-lg bg-red-900 px-4 py-2 text-sm text-white hover:opacity-90"
-              onClick={temporalSave}
+              onClick={() => save("-")}
             >
               임시저장
             </button>
             <button className="rounded-lg bg-blue-900 px-4 py-2 text-sm text-white hover:opacity-90">
               반려
             </button>
-            <button className="rounded-lg bg-green-900 px-4 py-2 text-sm text-white hover:opacity-90">
+            <button
+              className="rounded-lg bg-green-900 px-4 py-2 text-sm text-white hover:opacity-90"
+              onClick={() => save("TMP")}
+            >
               결재
             </button>
           </div>

@@ -52,6 +52,16 @@ function App() {
     }
   };
 
+  const logout = function () {
+    if (!confirm("로그아웃 하시겠습니까?")) {
+      return;
+    }
+    alert("로그아웃 되었습니다.");
+    setIsLogin(false);
+    setUser({});
+    navigate("/");
+  };
+
   return (
     <div>
       <div>
@@ -68,7 +78,7 @@ function App() {
               </>
             ) : (
               <>
-                <li>로그아웃</li>
+                <li onClick={logout}>로그아웃</li>
                 <li>
                   <Link to="/list">결재목록</Link>
                 </li>
@@ -103,13 +113,13 @@ function App() {
               <input
                 type="text"
                 ref={idRef}
-                value="pg111"
+                defaultValue="pg111"
                 placeholder="아이디"
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
               />
               <input
                 type="password"
-                value="a1234"
+                defaultValue="a1234"
                 ref={pwRef}
                 placeholder="비밀번호"
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
