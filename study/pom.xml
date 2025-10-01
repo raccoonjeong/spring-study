@@ -7,14 +7,14 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.4.7</version>
+    <version>3.4.10</version>
     <relativePath/> <!-- lookup parent from repository -->
   </parent>
 
   <groupId>com.example</groupId>
   <artifactId>firstproject</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <packaging>jar</packaging>
+  <packaging>war</packaging>
   <name>firstproject</name>
   <description>Demo project for Spring Boot with JSP</description>
 
@@ -44,12 +44,10 @@
     <dependency>
       <groupId>jakarta.servlet.jsp.jstl</groupId>
       <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
-      <version>3.0.0</version>
     </dependency>
     <dependency>
       <groupId>org.glassfish.web</groupId>
       <artifactId>jakarta.servlet.jsp.jstl</artifactId>
-      <version>3.0.1</version>
     </dependency>
 
     <!-- MySQL 드라이버 (필요 시) -->
@@ -63,6 +61,7 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-tomcat</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <!-- 개발 중 자동 리로딩용 -->

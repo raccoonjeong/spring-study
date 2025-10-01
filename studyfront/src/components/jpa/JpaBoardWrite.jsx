@@ -62,24 +62,23 @@ export function JpaBoardWrite() {
     //   }
     // });
 
-    debugger;
     try {
       const res = await fetch("http://localhost:8080/jpa/board", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        // headers: { "Content-Type": "application/json" },
+        body: formData,
         // body: JSON.stringify(formData),
-        body: JSON.stringify(formData),
       });
 
       const data = await res.json();
 
       console.log(data);
-      if (data.stus === "fail") {
+      if (data.status === "fail") {
         alert("등록에 실패");
       }
-      if (data.stus === "succ") {
+      if (data.status === "succ") {
         alert("등록에 성공");
-        navigate("/rest/list");
+        navigate("/jpa/list");
       }
     } catch (e) {
       console.error(e.message);

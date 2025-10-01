@@ -17,6 +17,7 @@ import Welcome from "./components/Welcome";
 import { LegacyApp } from "./components/legacy/LegacyApp";
 import { RestApp } from "./components/rest/RestApp";
 import { JpaApp } from "./components/jpa/JpaApp";
+import { Home } from "./components/Home";
 
 function App() {
   return (
@@ -63,7 +64,8 @@ function App() {
       {/* 라우터 영역 */}
       <div className="p-6">
         <Routes>
-          <Route path="/" element={<Welcome />}></Route>
+          {/* <Route path="/" element={<Welcome />}></Route> */}
+          <Route path="/" element={<Home />}></Route>
           <Route path="legacy" element={<LegacyApp />}>
             <Route index element={<Navigate to="list" replace />} />
             <Route path="list" element={<BoardList />}></Route>

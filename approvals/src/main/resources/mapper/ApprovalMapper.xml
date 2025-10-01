@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hye.approvals.mapper.ApprovalMapper">
+
+	<select id="getApprovalItems" resultType="com.hye.approvals.dto.ApprovalItemDTO">
+		select
+			num,
+			writer_id,
+			title,
+			content,
+			reg_date,
+			appr_date,
+			approver_id,
+			li.status_code,
+            stat.status_name,
+            emp.emp_name as writer,
+            emp2.emp_name as approver
+ 		from approval_list li
+			inner join approval_status stat
+				on li.status_code = stat.status_code
+    		inner join approval_emp emp
+    			on li.writer_id = emp.user_id
+    		left outer join approval_emp emp2
+    			on li.approver_id = emp2.user_id
+	</select>
+
+	<select id="getApprovalItem" parameterType="int" resultType="com.hye.approvals.dto.ApprovalItemDTO">
+		select
+			num,
+			emp.emp_name as writer,
+			title,
+			content,
+			li.status_code,
+            stat.status_name
+		from approval_list li
+    		inner join approval_emp emp
+    			on li.writer_id = emp.user_id
+			inner join approval_status stat
+                on li.status_code = stat.status_code
+        where li.num = #{num}
+	</select>
+
+	<select id="getApprovalHistories" parameterType="int" resultType="com.hye.approvals.dto.ApprovalHistoryDTO">
+
+		select
+			his_num,
+			approval_num,
+			proc_id,
+			emp.emp_name as proc_name,
+			his.position_cd,
+			po.position_name,
+			his.status_code,
+			stat.status_name,
+			his_reg_date
+		from approval_history his
+			inner join approval_list li
+				on his.approval_num = li.num
+			inner join approval_emp emp
+				on his.proc_id = emp.user_id
+			inner join positions po
+				on his.position_cd = po.position_cd
+			inner join approval_status stat
+				on his.status_code = stat.status_code
+		where approval_num = #{num}
+		order by his_num asc;
+
+	</select>
+
+	<select id="getNextNumber">
+		select max(num) + 1 from approval_list
+	</select>
+
+	<insert id="create" parameterType="com.hye.approvals.dto.ApprovalItemDTO"
+		useGeneratedKeys="true" keyProperty="num">
+		insert into
+			approval_list
+			(
+				writer_id,
+				title,
+				content,
+				reg_date,
+				appr_date,
+				approver_id,
+				status_code
+			)
+		values
+			(
+				#{writerId},
+				#{title},
+				#{content},
+				now(),
+				#{apprDate},
+				#{approverId},
+				#{statusCode}
+			)
+	</insert>
+
+	<insert id="insertHistory" parameterType="com.hye.approvals.dto.ApprovalHistoryDTO">
+	    insert into
+	    	approval_history
+	    	(
+				approval_num,
+			  	proc_id,
+			  	position_cd,
+			  	status_code,
+			  	his_reg_date
+			)
+  		values
+  			(
+  			 	#{approvalNum},
+  			 	#{procId},
+  			 	(select position_cd from approval_emp where user_id = #{procId}),
+  			 	#{statusCode},
+ 				now()
+			)
+	</insert>
+
+	<update id="updateApprovalStatus" parameterType="com.hye.approvals.dto.ApprovalActionDTO">
+		update
+			approval_list
+		set
+			approver_id = #{approverId},
+			status_code = #{statusCode},
+			appr_date = now()
+		where num = #{num}
+	</update>
+
+</mapper>

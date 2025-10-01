@@ -55,8 +55,11 @@ export function RestBoardList() {
   };
 
   const boardList = async () => {
-    const res = await fetch("http://localhost:8080/board");
+    const res = await fetch("http://localhost:8080/board/list");
     const data = await res.json();
+
+    console.log(data); // 추가
+
     setBoard(data.list);
     pageSetting(data.page);
   };
@@ -98,8 +101,8 @@ export function RestBoardList() {
       return;
     }
 
-    const res = await fetch("http://localhost:8080/board/search", {
-      method: "POST",
+    const res = await fetch("http://localhost:8080/board/list", {
+      method: "GET",
       headers: {
         "Content-Type": "application/json",
       },

@@ -2,6 +2,8 @@ package com.study.project.dto;
 
 import java.time.LocalDate;
 
+import com.study.project.entity.JpaBoardEntity;
+
 public class JpaBoardDTO {
 	private int boardNum;
 	private String userId;
@@ -11,6 +13,18 @@ public class JpaBoardDTO {
 	private LocalDate regDate;
 	private LocalDate uptDate;
 	private int viewCnt;
+
+	public static JpaBoardDTO from(JpaBoardEntity entity) {
+		JpaBoardDTO dto = new JpaBoardDTO();
+		dto.setBoardNum(entity.getBoardNum());
+		dto.setUserId(entity.getUserId());
+		dto.setUserName(entity.getUserName());
+		dto.setBoardSubject(entity.getBoardSubject());
+		dto.setBoardContent(entity.getBoardContent());
+		dto.setRegDate(entity.getRegDate());
+		dto.setUptDate(entity.getUptDate());
+		return dto;
+	}
 
 	public int getBoardNum() {
 		return boardNum;
