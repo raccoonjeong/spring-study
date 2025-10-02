@@ -2,7 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hye.approvals.mapper.ApprovalMapper">
 
-	<select id="getApprovalItems" resultType="com.hye.approvals.dto.ApprovalItemDTO">
+	<select id="getApprovalItems" parameterType="com.hye.approvals.dto.SearchDTO"
+				resultType="com.hye.approvals.dto.ApprovalItemDTO">
 		select
 			ROW_NUMBER() OVER (ORDER BY num) as row_num,
 			num,
@@ -27,6 +28,7 @@
     			on li.approver_id = emp2.user_id
     	order by
     		li.num desc
+   		limit #{pageSize} offset #{offset}
 	</select>
 
 	<select id="getApprovalItem" parameterType="int" resultType="com.hye.approvals.dto.ApprovalItemDTO">
@@ -127,5 +129,11 @@
 			appr_date = now()
 		where num = #{num}
 	</update>
+
+	<select id="totalCount" resultType="int" parameterType="com.hye.approvals.dto.SearchDTO">
+		 select
+		 	count(num)
+		 from approval_list
+	</select>
 
 </mapper>

@@ -6,22 +6,62 @@ export function ApprovalList() {
   const [approvalItems, setApprovalItems] = useState([]);
   const navigate = useNavigate();
   const { user } = useAuth();
+  const [page, setPage] = useState({});
+  const [pageBlock, setPageBlock] = useState([]);
 
-  const getApprovalItems = async function () {
-    const fetched = await fetch("http://localhost:8080/approval");
+  const getApprovalItems = async function (curPage = 1, pageSize = 10) {
+    const fetched = await fetch(
+      `http://localhost:8080/approval?curPage=${curPage}&pageSize=${pageSize}`
+    );
     const result = await fetched.json();
 
     if (result.status === "succ") {
-      setApprovalItems(result.data);
+      setApprovalItems(result.data.items);
+      setPage(result.data.curPage);
+      pageSetting({
+        blockEnd: result.data.blockEnd,
+        blockSize: result.data.blockSize,
+        blockStart: result.data.blockStart,
+        count: result.data.count,
+        curPage: result.data.curPage,
+        currentBlock: result.data.currentBlock,
+        totalPages: result.data.totalPages,
+      });
     }
+  };
+
+  const pageSetting = (page) => {
+    setPage(page);
+    const arr = [];
+    for (let p = page.blockStart; p <= page.blockEnd; p++) {
+      arr.push(p);
+    }
+    setPageBlock(arr);
   };
 
   const goDetail = function (num) {
     navigate(`/detail/${num}`);
   };
 
+  const getColorByStatus = function (status) {
+    switch (status) {
+      case "TMP":
+        return "text-stone-700";
+      case "PND":
+        return "text-amber-600";
+      case "APR":
+        return "text-blue-600";
+      case "CMP":
+        return "text-emerald-600";
+      case "REJ":
+        return "text-rose-600";
+      default:
+        return "text-stone-700";
+    }
+  };
+
   useEffect(() => {
-    getApprovalItems();
+    getApprovalItems(1);
   }, []);
 
   return (
@@ -72,9 +112,18 @@ export function ApprovalList() {
                       ? `${item.approver}(${item.approverPositionName})`
                       : "-"}
                   </td>
-                  <td className="px-4 py-3 text-stone-700">
+                  <td
+                    className={`px-4 py-3 ${getColorByStatus(item.statusCode)}`}
+                  >
                     {item.statusName}
                   </td>
+                  {/* 컬ㄹ러 참고용!! 
+                  <td className="px-4 py-3 text-stone-700">임시저장</td> 
+                  <td className="px-4 py-3 text-amber-600">결재대기</td>
+                  <td className="px-4 py-3 text-blue-600">결재중</td>
+                  <td className="px-4 py-3 text-emerald-600">결재완료</td>
+                  <td className="px-4 py-3 text-rose-600">반려</td>
+                  */}
                 </tr>
               ))
             ) : (
@@ -84,42 +133,41 @@ export function ApprovalList() {
                 </td>
               </tr>
             )}
-
-            {/* <tr className="border-t border-stone-200">
-              <td className="px-4 py-3">3</td>
-              <td className="px-4 py-3">최지훈</td>
-              <td className="px-4 py-3">법인카드 한도 증액 요청</td>
-              <td className="px-4 py-3">2025-09-03</td>
-              <td className="px-4 py-3">2025-09-04</td>
-              <td className="px-4 py-3">장미라(과장)</td>
-              <td className="px-4 py-3 text-blue-600">결재중</td>
-            </tr>
-
-            <tr className="border-t border-stone-200">
-              <td className="px-4 py-3">4</td>
-              <td className="px-4 py-3">윤아름</td>
-              <td className="px-4 py-3">교육비 지원 신청</td>
-              <td className="px-4 py-3">2025-09-05</td>
-              <td className="px-4 py-3">2025-09-06</td>
-              <td className="px-4 py-3">서동욱(부장)</td>
-              <td className="px-4 py-3 text-emerald-600">결재완료</td>
-            </tr>
-
-            <tr className="border-t border-stone-200">
-              <td className="px-4 py-3">5</td>
-              <td className="px-4 py-3">박민수</td>
-              <td className="px-4 py-3">야근식대 비용 처리</td>
-              <td className="px-4 py-3">2025-09-07</td>
-              <td className="px-4 py-3">2025-09-08</td>
-              <td className="px-4 py-3">한지섭(과장)</td>
-              <td className="px-4 py-3 text-rose-600">반려</td>
-            </tr> */}
           </tbody>
 
           <tfoot className="bg-white border-t border-stone-200">
             <tr>
               <td colSpan={7} className="px-4 py-3 text-center text-sm">
-                [이전] 1 2 3 4 5 [다음]
+                <div className="flex justify-center space-x-3 py-5">
+                  {page.blockStart > 1 && (
+                    <span
+                      className="border border-gray-400 px-3 py-1 hover:bg-violet-200 cursor-pointer rounded-sm"
+                      onClick={() => getApprovalItems(page.blockStart - 1)}
+                    >
+                      이전
+                    </span>
+                  )}
+                  {pageBlock.map((p, i) => (
+                    <span
+                      key={i}
+                      className={`border border-gray-400 px-3 py-1 hover:bg-violet-200 cursor-pointer rounded-sm ${
+                        p === page.curPage ? "bg-violet-300" : ""
+                      }`}
+                      onClick={() => getApprovalItems(p)}
+                    >
+                      {p}
+                    </span>
+                  ))}
+                  {page.blockEnd < page.totalPages && (
+                    <span
+                      className="border border-gray-400 px-3 py-1 hover:bg-violet-200 cursor-pointer rounded-sm"
+                      onClick={() => getApprovalItems(page.blockEnd + 1)}
+                    >
+                      다음
+                    </span>
+                  )}
+                </div>
+                {/* [이전] 1 2 3 4 5 [다음] */}
               </td>
             </tr>
           </tfoot>

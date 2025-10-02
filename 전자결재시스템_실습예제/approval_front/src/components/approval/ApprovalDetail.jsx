@@ -54,6 +54,23 @@ export function ApprovalDetail() {
     }
   };
 
+  const getColorByStatus = function (status) {
+    switch (status) {
+      case "TMP":
+        return "stone";
+      case "PND":
+        return "amber";
+      case "APR":
+        return "blue";
+      case "CMP":
+        return "emerald";
+      case "REJ":
+        return "rose";
+      default:
+        return "stone";
+    }
+  };
+
   useEffect(() => {
     getApprovalItem();
   }, []);
@@ -230,7 +247,13 @@ export function ApprovalDetail() {
                       {history.positionName}
                     </td>
                     <td className="px-4 py-3 text-sm">
-                      <span className="rounded-md bg-stone-100 px-2 py-1 text-xs text-stone-700 ring-1 ring-stone-200">
+                      <span
+                        className={`rounded-md bg-${getColorByStatus(
+                          history.statusCode
+                        )}-100 px-2 py-1 text-xs text-${getColorByStatus(
+                          history.statusCode
+                        )}-700 ring-1 ring-stone-200`}
+                      >
                         {history.statusName}
                       </span>
                     </td>

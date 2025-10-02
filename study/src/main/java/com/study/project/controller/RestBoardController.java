@@ -38,85 +38,85 @@ import jakarta.servlet.http.HttpServletResponse;
 @RequestMapping("/board")
 
 public class RestBoardController {
-	private static final Logger log = LoggerFactory.getLogger(RestBoardController.class);
-	private final RestBoardServiceInter service;
+    private static final Logger log = LoggerFactory.getLogger(RestBoardController.class);
+    private final RestBoardServiceInter service;
 
-	public RestBoardController(RestBoardServiceInter service) {
-		this.service  = service;
-	}
+    public RestBoardController(RestBoardServiceInter service) {
+        this.service  = service;
+    }
 
 
-	@GetMapping
-	public RestResponseDTO findAll() {
-		log.info("===REST LIST===");
+    @GetMapping
+    public RestResponseDTO findAll() {
+        log.info("===REST LIST===");
 
-		SearchDTO searchDTO = new SearchDTO();
-		searchDTO.setCurPage(1);
-		searchDTO.setPageSize(5);
-		searchDTO.setOffset(0);
+        SearchDTO searchDTO = new SearchDTO();
+        searchDTO.setCurPage(1);
+        searchDTO.setPageSize(5);
+        searchDTO.setOffset(0);
 
-		List<RestBoardDTO> list = service.findAll(searchDTO);
-		RestPageDTO pageDTO = service.page(searchDTO);
+        List<RestBoardDTO> list = service.findAll(searchDTO);
+        RestPageDTO pageDTO = service.page(searchDTO);
 
-		RestResponseDTO resDTO = new RestResponseDTO();
-		resDTO.setList(list);
-		resDTO.setPage(pageDTO);
+        RestResponseDTO resDTO = new RestResponseDTO();
+        resDTO.setList(list);
+        resDTO.setPage(pageDTO);
 
-		return resDTO;
-	}
+        return resDTO;
+    }
 
-	@PostMapping("/search")
-	public RestResponseDTO search(@RequestBody SearchDTO searchDTO){
-		log.info("===REST SEARCH===");
+    @PostMapping("/search")
+    public RestResponseDTO search(@RequestBody SearchDTO searchDTO){
+        log.info("===REST SEARCH===");
 
-		int curPage = searchDTO.getCurPage();
-		int pageSize = searchDTO.getPageSize();
-		int offset = (curPage - 1) * pageSize;
+        int curPage = searchDTO.getCurPage();
+        int pageSize = searchDTO.getPageSize();
+        int offset = (curPage - 1) * pageSize;
 
-		searchDTO.setOffset(offset);
+        searchDTO.setOffset(offset);
 
-		List<RestBoardDTO> list = service.findAll(searchDTO);
-		RestPageDTO pageDTO = service.page(searchDTO);
+        List<RestBoardDTO> list = service.findAll(searchDTO);
+        RestPageDTO pageDTO = service.page(searchDTO);
 
-		RestResponseDTO resDTO = new RestResponseDTO();
-		resDTO.setList(list);
-		resDTO.setPage(pageDTO);
+        RestResponseDTO resDTO = new RestResponseDTO();
+        resDTO.setList(list);
+        resDTO.setPage(pageDTO);
 
-		return resDTO;
-	}
+        return resDTO;
+    }
 
-	@GetMapping("/{num}")
-	public Map<String, Object> read(@PathVariable(name="num") int num) {
-		log.info("===REST DETAIL===");
+    @GetMapping("/{num}")
+    public Map<String, Object> read(@PathVariable(name="num") int num) {
+        log.info("===REST DETAIL===");
 
-		Map<String, Object> dataMap = new HashMap<String, Object>();
+        Map<String, Object> dataMap = new HashMap<String, Object>();
 
-		RestBoardDTO boardDto = service.read(num);
-		List<RestFileDTO> listFile = service.findFile(num);
+        RestBoardDTO boardDto = service.read(num);
+        List<RestFileDTO> listFile = service.findFile(num);
 
-		dataMap.put("boardDto", boardDto);
-		dataMap.put("listFile", listFile);
+        dataMap.put("boardDto", boardDto);
+        dataMap.put("listFile", listFile);
 
 //		RestBoardDTO board = service.findById(num);
 
-		return dataMap;
-	}
+        return dataMap;
+    }
 
-	@PostMapping("fileDownload")
-	public void fileDownload(@RequestBody RestFileDTO fileDTO, HttpServletResponse response) throws IOException{
+    @PostMapping("fileDownload")
+    public void fileDownload(@RequestBody RestFileDTO fileDTO, HttpServletResponse response) throws IOException{
 
 
-		File f = new File(fileDTO.getSavePath(), fileDTO.getSaveName());
+        File f = new File(fileDTO.getSavePath(), fileDTO.getSaveName());
 
-		if(!f.exists()) {
-			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-	        return;
+        if(!f.exists()) {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            return;
 
-		}
+        }
         // file 다운로드 설정
-		response.setContentType("application/octet-stream");
-	    response.setHeader("Content-Disposition", "attachme0nt; filename=\""
-	                       + URLEncoder.encode(fileDTO.getRealName(), "UTF-8") + "\"");
+        response.setContentType("application/octet-stream");
+        response.setHeader("Content-Disposition", "attachme0nt; filename=\""
+                           + URLEncoder.encode(fileDTO.getRealName(), "UTF-8") + "\"");
         // response 객체를 통해서 서버로부터 파일 다운로드
         OutputStream os = response.getOutputStream();
         // 파일 입력 객체 생성
@@ -125,50 +125,50 @@ public class RestBoardController {
         fis.close();
         os.close();
 
-	}
+    }
 
-	@PostMapping
-	public Map<String, Object> create(@ModelAttribute RestBoardDTO dto,
-			@RequestPart(value="files", required=false) List<MultipartFile> files) throws Exception {
+    @PostMapping
+    public Map<String, Object> create(@ModelAttribute RestBoardDTO dto,
+            @RequestPart(value="files", required=false) List<MultipartFile> files) throws Exception {
 
-		log.info("===REST INSERT===");
+        log.info("===REST INSERT===");
 
-		int insert = service.create(dto, files);
-		Map<String, Object> status = new HashMap<String, Object>();
+        int insert = service.create(dto, files);
+        Map<String, Object> status = new HashMap<String, Object>();
 
 
-		status.put("stus", insert > 0 ? "succ" : "fail");
-		return status;
-	}
+        status.put("stus", insert > 0 ? "succ" : "fail");
+        return status;
+    }
 
-	@PutMapping
-	public Map<String, Object> update(@RequestBody RestBoardDTO updateMap) {
+    @PutMapping
+    public Map<String, Object> update(@RequestBody RestBoardDTO updateMap) {
 
-		log.info("===REST UPDATE===");
-		int update = service.update(updateMap);
-		Map<String, Object> status = new HashMap<String, Object>();
+        log.info("===REST UPDATE===");
+        int update = service.update(updateMap);
+        Map<String, Object> status = new HashMap<String, Object>();
 
-		status.put("stus", update > 0 ? "succ" : "fail");
+        status.put("stus", update > 0 ? "succ" : "fail");
 
-		return status;
-	}
+        return status;
+    }
 
-	@DeleteMapping
-	public Map<String, Object> delete(@RequestBody List<Integer> deleteList) {
-		log.info("===REST DELETE===");
-		Map<String, Object> status = new HashMap<>();
+    @DeleteMapping
+    public Map<String, Object> delete(@RequestBody List<Integer> deleteList) {
+        log.info("===REST DELETE===");
+        Map<String, Object> status = new HashMap<>();
 
-		if(CollectionUtils.isEmpty(deleteList)) {
-			status.put("stus", "fail");
-			return status;
-		}
+        if(CollectionUtils.isEmpty(deleteList)) {
+            status.put("stus", "fail");
+            return status;
+        }
 
-		int delete = service.delete(deleteList);
+        int delete = service.delete(deleteList);
 
-		status.put("stus", delete > 0 ? "succ" : "fail");
+        status.put("stus", delete > 0 ? "succ" : "fail");
 
-		return status;
-	}
+        return status;
+    }
 
 
 

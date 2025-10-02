@@ -4,16 +4,20 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hye.approvals.dto.ApprovalActionDTO;
 import com.hye.approvals.dto.ApprovalItemDTO;
+import com.hye.approvals.dto.PageDTO;
 import com.hye.approvals.dto.ResponseDTO;
+import com.hye.approvals.dto.SearchDTO;
 import com.hye.approvals.service.ApprovalService;
 
 @RestController
@@ -28,11 +32,11 @@ public class ApprovalController {
 
 
 	@GetMapping
-	public ResponseDTO<List<ApprovalItemDTO>> getList() {
-		ResponseDTO<List<ApprovalItemDTO>> response = new ResponseDTO<>();
-		List<ApprovalItemDTO> list = service.getList();
+	public ResponseDTO<PageDTO<ApprovalItemDTO>> getList(@ModelAttribute SearchDTO search) {
+		ResponseDTO<PageDTO<ApprovalItemDTO>> response = new ResponseDTO<>();
+		PageDTO<ApprovalItemDTO> data = service.getList(search);
 
-		response.setData(list);
+		response.setData(data);
 		response.setStatus("succ");
 
 		return response;

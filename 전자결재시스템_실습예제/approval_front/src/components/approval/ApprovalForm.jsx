@@ -169,6 +169,90 @@ export function ApprovalForm() {
               </tr>
             </tbody>
           </table>
+
+          {/* 컬ㄹ러 참고용!! 
+          <tr className="border-t border-stone-200">
+                <td colSpan={4} className="px-4 py-3 text-sm text-center">
+                  문서 작성중...
+                </td>
+              </tr>
+              <tr className="border-t border-stone-200">
+                <td className="px-4 py-3 text-sm">1</td>
+                <td className="px-4 py-3 text-sm">김철수</td>
+                <td className="px-4 py-3 text-sm">사원</td>
+                <td className="px-4 py-3 text-sm">
+                  <span className="rounded-md bg-stone-100 px-2 py-1 text-xs text-stone-700 ring-1 ring-stone-200">
+                    임시저장
+                  </span>
+                </td>
+              </tr>
+
+
+              <tr className="border-t border-stone-200">
+                <td className="px-4 py-3 text-sm">2</td>
+                <td className="px-4 py-3 text-sm">김철수</td>
+                <td className="px-4 py-3 text-sm">사원</td>
+                <td className="px-4 py-3 text-sm">
+                  <span className="rounded-md bg-amber-50 px-2 py-1 text-xs text-amber-700 ring-1 ring-amber-200">
+                    결재대기
+                  </span>
+                </td>
+              </tr>
+
+              <tr className="border-t border-stone-200">
+                <td className="px-4 py-3 text-sm">3</td>
+                <td className="px-4 py-3 text-sm">장미라</td>
+                <td className="px-4 py-3 text-sm">과장</td>
+                <td className="px-4 py-3 text-sm">
+                  <span className="rounded-md bg-blue-50 px-2 py-1 text-xs text-blue-700 ring-1 ring-blue-200">
+                    결재중
+                  </span>
+                </td>
+              </tr>
+
+              <tr className="border-t border-stone-200">
+                <td className="px-4 py-3 text-sm">4</td>
+                <td className="px-4 py-3 text-sm">서동욱</td>
+                <td className="px-4 py-3 text-sm">부장</td>
+                <td className="px-4 py-3 text-sm">
+                  <span className="rounded-md bg-rose-50 px-2 py-1 text-xs text-rose-700 ring-1 ring-rose-200">
+                    반려
+                  </span>
+                </td>
+              </tr>
+
+              <tr className="border-t border-stone-200">
+                <td className="px-4 py-3 text-sm">5</td>
+                <td className="px-4 py-3 text-sm">김철수</td>
+                <td className="px-4 py-3 text-sm">사원</td>
+                <td className="px-4 py-3 text-sm">
+                  <span className="rounded-md bg-amber-50 px-2 py-1 text-xs text-amber-700 ring-1 ring-amber-200">
+                    결재대기
+                  </span>
+                </td>
+              </tr>
+
+              <tr className="border-t border-stone-200">
+                <td className="px-4 py-3 text-sm">6</td>
+                <td className="px-4 py-3 text-sm">한소영</td>
+                <td className="px-4 py-3 text-sm">과장</td>
+                <td className="px-4 py-3 text-sm">
+                  <span className="rounded-md bg-amber-50 px-2 py-1 text-xs text-amber-700 ring-1 ring-amber-200">
+                    결재대기
+                  </span>
+                </td>
+              </tr>
+
+              <tr className="border-t border-stone-200">
+                <td className="px-4 py-3 text-sm">7</td>
+                <td className="px-4 py-3 text-sm">서동욱</td>
+                <td className="px-4 py-3 text-sm">부장</td>
+                <td className="px-4 py-3 text-sm">
+                  <span className="rounded-md bg-emerald-50 px-2 py-1 text-xs text-emerald-700 ring-1 ring-emerald-200">
+                    결재완료
+                  </span>
+                </td>
+              </tr> */}
         </div>
       </div>
     </div>

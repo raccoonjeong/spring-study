@@ -1,0 +1,46 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@layer utilities {
+  .test {
+    @apply mx-auto max-w-lg px-4 py-8;
+  }
+  .test input[type="text"] {
+    @apply bg-stone-100 border border-stone-300 px-2 py-1 rounded-xl;
+  }
+  .test h1 {
+    @apply text-3xl font-bold mb-4;
+  }
+  .test button {
+    @apply bg-blue-500 my-2 mr-2 text-white px-4 py-2 rounded cursor-pointer;
+  }
+  .hljs {
+    background: inherit !important;
+  }
+
+  /* 사이드바 스크롤 & 구분선 약간 */
+  .scroll-y {
+    overflow-y: auto;
+  }
+
+  .prose h1 a,
+  .prose h2 a,
+  .prose h3 a,
+  .prose h4 a,
+  .prose h5 a,
+  .prose h6 a {
+    text-decoration: none; /* 밑줄 제거 */
+    color: inherit; /* 글자색은 원래대로 */
+  }
+
+  .prose h1 a,
+  .prose h2 a {
+    font-weight: bold;
+  }
+  .prose h1 a {
+    font-size: 36px;
+    border-bottom: 2px solid black;
+    padding-bottom: 12px;
+    line-height: 2em;
+  }
+}

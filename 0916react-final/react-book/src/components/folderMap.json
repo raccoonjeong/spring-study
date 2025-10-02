@@ -1,0 +1,18 @@
+{
+  "sample1": "[실습1] 할일 목록",
+  "sample2": "[실습2] 이미지 슬라이드쇼",
+  "lesson18": "18강 리액트 시작하기",
+  "lesson19": "19강 화면에 css 적용하기",
+  "lesson20": "20강 동적 모달창 활용",
+  "lesson21": "21강 useState 사용하기",
+  "lesson22": "22강 입력폼으로 데이터 출력하기",
+  "lesson23": "23강 useRef 익히기",
+  "lesson24": "24강 컴포넌트 나누기와 props",
+  "lesson25": "25강 라우터, 링크 익히기",
+  "lesson26": "26강 useEffect와 백엔드 세팅",
+  "lesson27": "27강 RESTful API 만들기",
+  "lesson28": "28강 블로그 CRUD 구현하기",
+  "lesson29": "29강 여러가지 hook 적용하기",
+  "lesson30": "30강 JWT으로 로그인 구현하기",
+  "lesson31": "31강 [실습] Blog 데모 튜토리얼"
+}
