@@ -18,6 +18,11 @@ repositories {
 	mavenCentral()
 }
 
+
+ext {
+    jjwtVersion = '0.11.5'
+}
+
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -28,6 +33,15 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.5'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	// JWT
+	implementation "io.jsonwebtoken:jjwt-api:${jjwtVersion}"
+	runtimeOnly  "io.jsonwebtoken:jjwt-impl:${jjwtVersion}"
+	runtimeOnly  "io.jsonwebtoken:jjwt-jackson:${jjwtVersion}"
+
+	// 비밀번호 해시(BCrypt)만 사용 (Spring Security 전체 아님)
+	implementation 'org.springframework.security:spring-security-crypto'
+
 }
 
 tasks.named('test') {

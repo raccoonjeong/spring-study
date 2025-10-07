@@ -3,13 +3,22 @@ import { ApprovalList } from "./components/approval/ApprovalList";
 import { ApprovalForm } from "./components/approval/ApprovalForm";
 import { ApprovalDetail } from "./components/approval/ApprovalDetail";
 import { Home } from "./components/main/home";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useAuth } from "./components/hooks/AuthContext";
 
 function App() {
   const [showLogin, setShowLogin] = useState(false);
   // const [isLogin, setIsLogin] = useState(false);
-  const { user, setUser, isLogin, setIsLogin } = useAuth();
+  const {
+    user,
+    setUser,
+    isLogin,
+    setIsLogin,
+    accessToken,
+    setAccessToken,
+    fetchWithAuth,
+  } = useAuth();
+
   const idRef = useRef("");
   const pwRef = useRef("");
   const navigate = useNavigate();
@@ -28,9 +37,10 @@ function App() {
     }
 
     try {
-      const fetched = await fetch("http://localhost:8080/login", {
+      const fetched = await fetch("http://localhost:8080/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include", // refresh 쿠키 수신
         body: JSON.stringify({ userId, userPw }),
       });
 
@@ -39,28 +49,53 @@ function App() {
       if (result.status === "succ") {
         alert("로그인 성공!");
         setIsLogin(true);
-        setUser(result.data);
+        setUser(result.data.user);
+        setAccessToken(result.data.token);
+
+        localStorage.setItem("AT", result.data.token);
+        localStorage.setItem("ME", JSON.stringify(result.data.user));
+
         setShowLogin(false);
         navigate("/list");
         return;
       }
-      if (data.status === "fail") {
-        alert(data.message);
+      if (result.status === "fail") {
+        alert(result.message);
       }
     } catch (err) {
       alert(err.message);
     }
   };
 
-  const logout = function () {
+  const logout = async function () {
     if (!confirm("로그아웃 하시겠습니까?")) {
       return;
     }
+    await fetchWithAuth(`/auth/logout`, {
+      method: "POST",
+    });
+
     alert("로그아웃 되었습니다.");
+
     setIsLogin(false);
     setUser({});
+    setAccessToken(null);
+    localStorage.removeItem("AT");
+    localStorage.removeItem("ME");
+
     navigate("/");
   };
+
+  useEffect(() => {
+    const token = localStorage.getItem("AT");
+    const me = localStorage.getItem("ME");
+    if (token) {
+      console.log("Found token in localStorage:", token);
+      setAccessToken(token);
+      setUser(JSON.parse(me));
+      setIsLogin(true);
+    }
+  }, []);
 
   return (
     <div>

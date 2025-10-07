@@ -1,7 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hye.approvals.mapper.ApprovalMapper">
-
+	<sql id="searchCondition">
+		case
+			when #{levelNo} IN (1, 2)
+				then writer_id = #{userId}
+			when #{levelNo} = 3
+				then writer_id = #{userId}
+					or li.status_code = 'PND'
+					or (select ah.proc_id from approval_history ah where approval_num = li.num and ah.status_code = 'APR' order by ah.his_num desc limit 1)
+						= #{userId}
+			when #{levelNo} = 4
+				then writer_id = #{userId}
+					or li.status_code not in ('TMP', 'PND')
+			else 1=1
+		end
+	</sql>
 	<select id="getApprovalItems" parameterType="com.hye.approvals.dto.SearchDTO"
 				resultType="com.hye.approvals.dto.ApprovalItemDTO">
 		select
@@ -19,13 +33,17 @@
             emp2.emp_name as approver,
             (select position_name from positions where position_cd = emp2.position_cd)
             	as approver_position_name
- 		from approval_list li
+		from approval_list li
 			inner join approval_status stat
 				on li.status_code = stat.status_code
     		inner join approval_emp emp
     			on li.writer_id = emp.user_id
     		left outer join approval_emp emp2
     			on li.approver_id = emp2.user_id
+ 		<where>
+ 		    <include refid="searchCondition">
+			</include>
+		</where>
     	order by
     		li.num desc
    		limit #{pageSize} offset #{offset}
@@ -35,6 +53,7 @@
 		select
 			num,
 			emp.emp_name as writer,
+			li.writer_id,
 			title,
 			content,
 			li.status_code,
@@ -72,7 +91,7 @@
 	</select>
 
 	<select id="getNextNumber">
-		select max(num) + 1 from approval_list
+		select ifnull(max(num), 0) + 1 from approval_list
 	</select>
 
 	<insert id="create" parameterType="com.hye.approvals.dto.ApprovalItemDTO"
@@ -133,7 +152,11 @@
 	<select id="totalCount" resultType="int" parameterType="com.hye.approvals.dto.SearchDTO">
 		 select
 		 	count(num)
-		 from approval_list
+		 from approval_list li
+		<where>
+			<include refid="searchCondition">
+			</include>
+		</where>
 	</select>
 
 </mapper>

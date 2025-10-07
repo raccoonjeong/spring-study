@@ -6,13 +6,13 @@ import { getNextStatusByApprove } from "../common/commonCode";
 export function ApprovalForm() {
   const navigate = useNavigate();
   const [nextVal, setNextVal] = useState(0);
-  const { user } = useAuth();
+  const { user, fetchWithAuth, isLogin } = useAuth();
 
   const titleRef = useRef("");
   const contentRef = useRef("");
 
   const getNextNumber = async function () {
-    const fetched = await fetch("http://localhost:8080/approval/nextval");
+    const fetched = await fetchWithAuth("/approval/nextval");
     const result = await fetched.json();
     if (result.status === "succ") {
       setNextVal(result.data);
@@ -28,7 +28,7 @@ export function ApprovalForm() {
       if (!confirm(`${status.guideWord}하시겠습니까?`)) {
         return;
       }
-      const fetched = await fetch("http://localhost:8080/approval", {
+      const fetched = await fetchWithAuth("/approval", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -49,8 +49,10 @@ export function ApprovalForm() {
   };
 
   useEffect(() => {
-    getNextNumber();
-  }, []);
+    if (isLogin) {
+      getNextNumber();
+    }
+  }, [isLogin]);
 
   return (
     <div className="mx-auto max-w-3xl p-6">
@@ -128,9 +130,6 @@ export function ApprovalForm() {
               onClick={() => save("-")}
             >
               임시저장
-            </button>
-            <button className="rounded-lg bg-blue-900 px-4 py-2 text-sm text-white hover:opacity-90">
-              반려
             </button>
             <button
               className="rounded-lg bg-green-900 px-4 py-2 text-sm text-white hover:opacity-90"

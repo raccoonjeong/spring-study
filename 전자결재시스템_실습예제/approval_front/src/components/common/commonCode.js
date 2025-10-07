@@ -26,8 +26,6 @@ export const isApproved = function (statusCode) {
 };
 
 export const getNextStatusByApprove = function (currentStatus, levelNo) {
-  //   const position = findPositionObjectByCode(positionCd);
-
   if (!currentStatus || !levelNo) {
     throw new Error("권한이 없습니다.");
   }
@@ -37,6 +35,10 @@ export const getNextStatusByApprove = function (currentStatus, levelNo) {
   }
 
   if (currentStatus === "TMP" || currentStatus === "REJ") {
+    if (levelNo >= 3) {
+      // 과장 이상이면
+      return { code: "APR", guideWord: "결재" }; // 바로 결재중으로
+    }
     return { code: "PND", guideWord: "결재 요청" }; // 임시저장 -> 결재대기
   }
   if (currentStatus === "PND") {

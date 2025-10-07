@@ -7,11 +7,11 @@ import com.hye.approvals.dto.UserDTO;
 import com.hye.approvals.mapper.LoginMapper;
 
 @Service
-public class LoginServiceImpl implements LoginService{
+public class AuthServiceImpl implements AuthService {
 
 	private final LoginMapper mapper;
 
-	public LoginServiceImpl(LoginMapper mapper) {
+	public AuthServiceImpl(LoginMapper mapper) {
 		this.mapper = mapper;
 	}
 

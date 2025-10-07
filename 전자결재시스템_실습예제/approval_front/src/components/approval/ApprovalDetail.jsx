@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import {
   getNextStatusByApprove,
@@ -10,18 +10,27 @@ import {
 import { useAuth } from "../hooks/AuthContext";
 
 export function ApprovalDetail() {
+  const navigate = useNavigate();
   const { num } = useParams();
   const [item, setItem] = useState({});
   const [histories, setHistories] = useState([]);
-  const { user } = useAuth();
+  const { user, fetchWithAuth, isLogin } = useAuth();
 
   const getApprovalItem = async function () {
-    const fetched = await fetch(`http://localhost:8080/approval/${num}`);
-    const result = await fetched.json();
+    try {
+      const fetched = await fetchWithAuth(`/approval/${num}`);
+      const result = await fetched.json();
 
-    if (result.status === "succ") {
-      setItem(result.data.item);
-      setHistories(result.data.histories);
+      if (result.status === "succ") {
+        setItem(result.data.item);
+        setHistories(result.data.histories);
+      }
+      if (result.status === "fail") {
+        throw new Error(result.message);
+      }
+    } catch (err) {
+      alert(err.message);
+      navigate(-1);
     }
   };
 
@@ -32,18 +41,15 @@ export function ApprovalDetail() {
       if (!confirm(`${nextStatusCode.guideWord}하시겠습니까?`)) {
         return;
       }
-      const fetched = await fetch(
-        `http://localhost:8080/approval/process-approval`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            num: num,
-            approverId: user.userId,
-            statusCode: nextStatusCode.code,
-          }),
-        }
-      );
+      const fetched = await fetchWithAuth(`/approval/process-approval`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          num: num,
+          approverId: user.userId,
+          statusCode: nextStatusCode.code,
+        }),
+      });
       const result = await fetched.json();
       if (result.status === "succ") {
         alert(`${nextStatusCode.guideWord}되었습니다.`);
@@ -72,8 +78,10 @@ export function ApprovalDetail() {
   };
 
   useEffect(() => {
-    getApprovalItem();
-  }, []);
+    if (isLogin) {
+      getApprovalItem();
+    }
+  }, [isLogin]);
 
   return (
     <div className="mx-auto max-w-3xl p-6">
@@ -199,9 +207,6 @@ export function ApprovalDetail() {
             <button className="rounded-lg border border-stone-300 px-4 py-2 text-sm hover:bg-stone-50">
               취소
             </button>
-            <button className="rounded-lg bg-red-900 px-4 py-2 text-sm text-white hover:opacity-90">
-              임시저장
-            </button>
             <button
               onClick={() => processApproval(getNextStatusByReject)}
               className="rounded-lg bg-blue-900 px-4 py-2 text-sm text-white hover:opacity-90"
@@ -240,7 +245,7 @@ export function ApprovalDetail() {
             <tbody className="[&>tr:hover]:bg-stone-50">
               {histories ? (
                 histories.map((history, index) => (
-                  <tr className="border-t border-stone-200">
+                  <tr className="border-t border-stone-200" key={index}>
                     <td className="px-4 py-3 text-sm">{index + 1}</td>
                     <td className="px-4 py-3 text-sm">{history.procName}</td>
                     <td className="px-4 py-3 text-sm">

@@ -1,18 +1,11 @@
 package com.hye.approvals.service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.hye.approvals.dto.*;
+import com.hye.approvals.mapper.ApprovalMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.hye.approvals.dto.ApprovalActionDTO;
-import com.hye.approvals.dto.ApprovalHistoryDTO;
-import com.hye.approvals.dto.ApprovalItemDTO;
-import com.hye.approvals.dto.PageDTO;
-import com.hye.approvals.dto.SearchDTO;
-import com.hye.approvals.mapper.ApprovalMapper;
+import java.util.*;
 
 
 @Service
@@ -36,17 +29,59 @@ public class ApprovalServiceImpl implements ApprovalService {
 	}
 
 	@Override
-	public Map<String, Object> getDetail(int num) {
+	public Map<String, Object> getDetail(UserDTO user, int num) {
 		Map<String, Object> result = new HashMap<>();
 
 		ApprovalItemDTO item = mapper.getApprovalItem(num);
 		List<ApprovalHistoryDTO> histories = mapper.getApprovalHistories(num);
 
+		if (!this.hasViewPermission(user, item.getWriterId(),item.getStatusCode(), histories)) {
+			throw new RuntimeException("조회 권한이 없습니다.");
+		}
 		result.put("item", item);
 		result.put("histories", histories);
 
 		return result;
 	}
+
+	private boolean hasViewPermission (UserDTO user, String writerId, String statusCode, List<ApprovalHistoryDTO> histories) {
+		String userId = user.getUserId();
+		Integer levelNo = user.getLevelNo();
+
+		boolean isMyItem = userId.equals(writerId);
+
+		if (List.of(1,2).contains(levelNo)) {
+			return isMyItem;
+		}
+
+		boolean isPending = Objects.equals(statusCode, "PND");
+
+		List<ApprovalHistoryDTO> sortedHistories =
+				histories.stream()
+						.sorted(Comparator.comparing(ApprovalHistoryDTO::getHisNum).reversed())
+						.toList();
+
+		String lastApprover = sortedHistories.stream()
+				.filter(h -> Objects.equals(h.getStatusCode(), "APR"))
+				.findFirst()
+				.orElse(new ApprovalHistoryDTO())
+				.getProcId();
+
+		boolean isRecentApprover = Objects.equals(lastApprover, userId);
+
+		if (3 == levelNo) {
+			return isMyItem || isPending || isRecentApprover;
+		}
+
+		boolean isNotTempOrPend = !List.of("TMP", "PND").contains(statusCode);
+
+		if (4 == levelNo) {
+			return isMyItem || isNotTempOrPend;
+		}
+
+		return false;
+	}
+
 	@Override
 	public int getNextNumber() {
 

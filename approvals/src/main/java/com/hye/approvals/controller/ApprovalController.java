@@ -1,28 +1,18 @@
 package com.hye.approvals.controller;
 
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.hye.approvals.dto.ApprovalActionDTO;
-import com.hye.approvals.dto.ApprovalItemDTO;
-import com.hye.approvals.dto.PageDTO;
-import com.hye.approvals.dto.ResponseDTO;
-import com.hye.approvals.dto.SearchDTO;
+import com.hye.approvals.auth.CurrentUser;
+import com.hye.approvals.dto.*;
 import com.hye.approvals.service.ApprovalService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("approval")
 public class ApprovalController {
+	private static final Logger log = LoggerFactory.getLogger(ApprovalController.class);
 
 	private final ApprovalService service;
 
@@ -30,27 +20,36 @@ public class ApprovalController {
 		this.service = service;
 	}
 
-
 	@GetMapping
-	public ResponseDTO<PageDTO<ApprovalItemDTO>> getList(@ModelAttribute SearchDTO search) {
+	public ResponseDTO<PageDTO<ApprovalItemDTO>> getList(@CurrentUser UserDTO user, @ModelAttribute SearchDTO search) {
+
+		log.info("==================Login User Info::: userId: {}, levelNo: {}", user.getUserId(), user.getLevelNo());
 		ResponseDTO<PageDTO<ApprovalItemDTO>> response = new ResponseDTO<>();
+
+		search.setUserId(user.getUserId());
+		search.setEmpName(user.getEmpName());
+		search.setLevelNo(user.getLevelNo());
+
 		PageDTO<ApprovalItemDTO> data = service.getList(search);
 
 		response.setData(data);
 		response.setStatus("succ");
 
 		return response;
-
 	}
 
 	@GetMapping("/{num}")
-	public ResponseDTO<Map<String, Object>> getDetail(@PathVariable(value="num") int num) {
+	public ResponseDTO<Map<String, Object>> getDetail(@CurrentUser UserDTO user, @PathVariable(value="num") int num) {
 		ResponseDTO<Map<String, Object>> response = new ResponseDTO<>();
-		Map<String, Object> result = service.getDetail(num);
+		try {
+			Map<String, Object> result = service.getDetail(user, num);
+			response.setData(result);
+			response.setStatus("succ");
 
-		response.setData(result);
-		response.setStatus("succ");
-
+		} catch (RuntimeException e) {
+			response.setStatus("fail");
+			response.setMessage(e.getMessage());
+		}
 		return response;
 
 	}

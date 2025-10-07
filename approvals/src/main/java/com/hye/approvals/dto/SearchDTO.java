@@ -5,6 +5,33 @@ public class SearchDTO {
 	private int pageSize; // limit
 	private int offset; // offset
 
+	private String userId;
+	private String empName;
+	private Integer levelNo;
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+
+	public String getEmpName() {
+		return empName;
+	}
+
+	public void setEmpName(String empName) {
+		this.empName = empName;
+	}
+
+	public Integer getLevelNo() {
+		return levelNo;
+	}
+
+	public void setLevelNo(Integer levelNo) {
+		this.levelNo = levelNo;
+	}
 
 	public int getCurPage() {
 		return curPage;

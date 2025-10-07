@@ -6,6 +6,7 @@ public class UserDTO {
 	private String positionCd;
 	private String positionName;
 	private Integer levelNo;
+	private long exp;
 
 	public String getUserId() {
 		return userId;
@@ -37,6 +38,11 @@ public class UserDTO {
 	public void setLevelNo(Integer levelNo) {
 		this.levelNo = levelNo;
 	}
+	public long getExp() {
+		return exp;
+	}
 
-
+	public void setExp(long exp) {
+		this.exp = exp;
+	}
 }

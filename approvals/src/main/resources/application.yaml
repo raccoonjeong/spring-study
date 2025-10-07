@@ -1,0 +1,37 @@
+mybatis:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: 'true'
+  mapper-locations: classpath:mapper/*.xml
+spring:
+  application:
+    name: approvals
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      enabled: 'true'
+      max-request-size: 20MB
+  datasource:
+    password: '1234'
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    url: jdbc:mysql://localhost:3306/myschema?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+server:
+  port: '8080'
+logging:
+  level:
+    com.hye: DEBUG   # ← 내 패키지 로그
+    java:
+      sql: DEBUG
+app:
+  jwt:
+    access-secret:  "replace-with-256bit-access-secret"   # 최소 32바이트 이상 랜덤값
+    refresh-secret: "replace-with-256bit-refresh-secret"  # access와 서로 다르게!
+    access-exp-min: 1
+    refresh-exp-day: 14
+
+  cookie:
+    refresh-name: "RT"
+    secure: false     # 로컬 http 테스트면 false, 배포 https면 true
+    same-site: "Lax"  # "Lax"|"Strict"|"None"(https+secure 필요)
+    path: "/"

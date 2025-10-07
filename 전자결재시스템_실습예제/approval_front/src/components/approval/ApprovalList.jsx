@@ -5,13 +5,14 @@ import { useAuth } from "../hooks/AuthContext";
 export function ApprovalList() {
   const [approvalItems, setApprovalItems] = useState([]);
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, isLogin, fetchWithAuth, accessToken } = useAuth();
   const [page, setPage] = useState({});
   const [pageBlock, setPageBlock] = useState([]);
 
   const getApprovalItems = async function (curPage = 1, pageSize = 10) {
-    const fetched = await fetch(
-      `http://localhost:8080/approval?curPage=${curPage}&pageSize=${pageSize}`
+    console.log("accessToken:", accessToken);
+    const fetched = await fetchWithAuth(
+      `/approval?curPage=${curPage}&pageSize=${pageSize}`
     );
     const result = await fetched.json();
 
@@ -61,8 +62,10 @@ export function ApprovalList() {
   };
 
   useEffect(() => {
-    getApprovalItems(1);
-  }, []);
+    if (isLogin) {
+      getApprovalItems(1);
+    }
+  }, [isLogin]);
 
   return (
     <div className="mx-auto max-w-[1200px] p-6">

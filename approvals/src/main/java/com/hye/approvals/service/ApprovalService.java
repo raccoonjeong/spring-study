@@ -1,18 +1,13 @@
 package com.hye.approvals.service;
 
-import java.util.List;
-import java.util.Map;
+import com.hye.approvals.dto.*;
 
-import com.hye.approvals.dto.ApprovalActionDTO;
-import com.hye.approvals.dto.ApprovalHistoryDTO;
-import com.hye.approvals.dto.ApprovalItemDTO;
-import com.hye.approvals.dto.PageDTO;
-import com.hye.approvals.dto.SearchDTO;
+import java.util.Map;
 
 public interface ApprovalService {
 
 	PageDTO<ApprovalItemDTO> getList(SearchDTO search);
-	Map<String, Object> getDetail(int num);
+	Map<String, Object> getDetail(UserDTO user, int num);
 	int getNextNumber();
 	int create(ApprovalItemDTO item);
 	int processApproval(ApprovalActionDTO action);
