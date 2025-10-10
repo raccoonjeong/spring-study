@@ -1,101 +1,15 @@
-import { Link, NavLink, Route, Routes, useNavigate } from "react-router-dom";
-import { ApprovalList } from "./components/approval/ApprovalList";
-import { ApprovalForm } from "./components/approval/ApprovalForm";
-import { ApprovalDetail } from "./components/approval/ApprovalDetail";
+import { useState } from "react";
+import { Link, Route, Routes, useNavigate } from "react-router-dom";
+import { ApprovalList } from "./pages/ApprovalList";
+import { ApprovalForm } from "./pages/ApprovalForm";
+import { ApprovalDetail } from "./pages/ApprovalDetail";
+import { Login } from "./components/login/Login";
 import { Home } from "./components/main/home";
-import { useState, useRef, useEffect } from "react";
-import { useAuth } from "./components/hooks/AuthContext";
+import { useAuth } from "./hooks/AuthContext";
 
 function App() {
+  const { isLogin, logout } = useAuth();
   const [showLogin, setShowLogin] = useState(false);
-  // const [isLogin, setIsLogin] = useState(false);
-  const {
-    user,
-    setUser,
-    isLogin,
-    setIsLogin,
-    accessToken,
-    setAccessToken,
-    fetchWithAuth,
-  } = useAuth();
-
-  const idRef = useRef("");
-  const pwRef = useRef("");
-  const navigate = useNavigate();
-
-  const login = async function () {
-    const userId = idRef.current.value;
-    const userPw = pwRef.current.value;
-
-    if (!userId) {
-      alert("아이디를 입력해주세요.");
-      return;
-    }
-    if (!userPw) {
-      alert("비밀번호를 입력해주세요.");
-      return;
-    }
-
-    try {
-      const fetched = await fetch("http://localhost:8080/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include", // refresh 쿠키 수신
-        body: JSON.stringify({ userId, userPw }),
-      });
-
-      const result = await fetched.json();
-
-      if (result.status === "succ") {
-        alert("로그인 성공!");
-        setIsLogin(true);
-        setUser(result.data.user);
-        setAccessToken(result.data.token);
-
-        localStorage.setItem("AT", result.data.token);
-        localStorage.setItem("ME", JSON.stringify(result.data.user));
-
-        setShowLogin(false);
-        navigate("/list");
-        return;
-      }
-      if (result.status === "fail") {
-        alert(result.message);
-      }
-    } catch (err) {
-      alert(err.message);
-    }
-  };
-
-  const logout = async function () {
-    if (!confirm("로그아웃 하시겠습니까?")) {
-      return;
-    }
-    await fetchWithAuth(`/auth/logout`, {
-      method: "POST",
-    });
-
-    alert("로그아웃 되었습니다.");
-
-    setIsLogin(false);
-    setUser({});
-    setAccessToken(null);
-    localStorage.removeItem("AT");
-    localStorage.removeItem("ME");
-
-    navigate("/");
-  };
-
-  useEffect(() => {
-    const token = localStorage.getItem("AT");
-    const me = localStorage.getItem("ME");
-    if (token) {
-      console.log("Found token in localStorage:", token);
-      setAccessToken(token);
-      setUser(JSON.parse(me));
-      setIsLogin(true);
-    }
-  }, []);
 
   return (
     <div>
@@ -135,50 +49,7 @@ function App() {
         </Routes>
       </div>
 
-      {showLogin && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-          <div className="bg-white rounded-xl shadow-lg w-full max-w-sm p-6 relative">
-            {/* 모달 타이틀 */}
-            <h2 className="text-2xl font-bold mb-4 text-center text-gray-800">
-              로그인
-            </h2>
-
-            {/* 입력 영역 */}
-            <div className="space-y-3">
-              <input
-                type="text"
-                ref={idRef}
-                defaultValue="pg111"
-                placeholder="아이디"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-              />
-              <input
-                type="password"
-                defaultValue="a1234"
-                ref={pwRef}
-                placeholder="비밀번호"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-              />
-            </div>
-
-            {/* 버튼 */}
-            <div className="flex justify-center gap-3 mt-6">
-              <button
-                onClick={login}
-                className="w-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg"
-              >
-                로그인
-              </button>
-              <button
-                onClick={() => setShowLogin(false)}
-                className="w-auto bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg"
-              >
-                닫기
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <Login showLogin={showLogin} setShowLogin={setShowLogin} />
     </div>
   );
 }

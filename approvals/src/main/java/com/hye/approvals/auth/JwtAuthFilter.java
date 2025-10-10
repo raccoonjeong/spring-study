@@ -53,6 +53,7 @@ public class JwtAuthFilter implements Filter {
         // 보호 엔드포인트: Access 토큰 검증
         String auth = request.getHeader("Authorization");
         if (auth == null || !auth.startsWith("Bearer ")) {
+            log.info("❌ Missing or invalid Authorization header");
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Missing Bearer token");
             return;
         }
@@ -60,6 +61,7 @@ public class JwtAuthFilter implements Filter {
         String token = auth.substring("Bearer ".length()).trim();
 
         if (blacklist.isRevoked(token)) {
+            log.info("❌ Revoked token");
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token revoked");
             return;
         }

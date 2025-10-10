@@ -2,9 +2,11 @@ package com.hye.approvals.auth;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +16,7 @@ import java.util.Map;
 
 @Component
 public class AccessTokenService {
+    private static final Logger log = LoggerFactory.getLogger(AccessTokenService.class);
     private final Key key;
     private final long expMillis;
 

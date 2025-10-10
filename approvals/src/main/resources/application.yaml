@@ -27,8 +27,8 @@ app:
   jwt:
     access-secret:  "replace-with-256bit-access-secret"   # 최소 32바이트 이상 랜덤값
     refresh-secret: "replace-with-256bit-refresh-secret"  # access와 서로 다르게!
-    access-exp-min: 1
-    refresh-exp-day: 14
+    access-exp-min: 15
+    refresh-exp-day: 1
 
   cookie:
     refresh-name: "RT"

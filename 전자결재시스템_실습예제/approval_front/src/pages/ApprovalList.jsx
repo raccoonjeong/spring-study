@@ -120,13 +120,6 @@ export function ApprovalList() {
                   >
                     {item.statusName}
                   </td>
-                  {/* 컬ㄹ러 참고용!! 
-                  <td className="px-4 py-3 text-stone-700">임시저장</td> 
-                  <td className="px-4 py-3 text-amber-600">결재대기</td>
-                  <td className="px-4 py-3 text-blue-600">결재중</td>
-                  <td className="px-4 py-3 text-emerald-600">결재완료</td>
-                  <td className="px-4 py-3 text-rose-600">반려</td>
-                  */}
                 </tr>
               ))
             ) : (
@@ -170,7 +163,6 @@ export function ApprovalList() {
                     </span>
                   )}
                 </div>
-                {/* [이전] 1 2 3 4 5 [다음] */}
               </td>
             </tr>
           </tfoot>
