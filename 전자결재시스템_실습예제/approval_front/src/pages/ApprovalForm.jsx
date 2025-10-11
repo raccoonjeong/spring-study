@@ -21,7 +21,7 @@ export function ApprovalForm() {
           title,
           content,
           writerId,
-          statusCode: status.code,
+          requestedStatusCode: status.code,
         }),
       });
       const result = await fetched.json();

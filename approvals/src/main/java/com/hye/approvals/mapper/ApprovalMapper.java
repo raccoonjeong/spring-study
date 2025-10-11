@@ -1,13 +1,12 @@
 package com.hye.approvals.mapper;
 
-import java.util.List;
-
-import org.apache.ibatis.annotations.Mapper;
-
 import com.hye.approvals.dto.ApprovalActionDTO;
 import com.hye.approvals.dto.ApprovalHistoryDTO;
 import com.hye.approvals.dto.ApprovalItemDTO;
 import com.hye.approvals.dto.SearchDTO;
+import org.apache.ibatis.annotations.Mapper;
+
+import java.util.List;
 
 @Mapper
 public interface ApprovalMapper {
@@ -28,4 +27,7 @@ public interface ApprovalMapper {
 
 	int totalCount(SearchDTO searchDTO);
 
+    String getCurrentStatus(Integer num);
+
+	int update(ApprovalItemDTO item);
 }

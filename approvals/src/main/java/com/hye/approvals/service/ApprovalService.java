@@ -10,7 +10,9 @@ public interface ApprovalService {
 	Map<String, Object> getDetail(UserDTO user, int num);
 	int getNextNumber();
 	int create(ApprovalItemDTO item);
-	int processApproval(ApprovalActionDTO action);
+	int process(ApprovalActionDTO action);
+
+	int reapprove(ApprovalItemDTO item);
 //	PageDTO<ApprovalItemDTO> calculatePage(SearchDTO search);
 
 }

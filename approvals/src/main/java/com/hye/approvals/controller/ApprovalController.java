@@ -82,12 +82,30 @@ public class ApprovalController {
 		return response;
 	}
 
-	@PatchMapping("/process-approval")
-	public ResponseDTO<Void> approve(@RequestBody ApprovalActionDTO action) {
+	@PutMapping
+	public ResponseDTO<Void> reapprove(@CurrentUser UserDTO user, @RequestBody ApprovalItemDTO item) {
 
 		ResponseDTO<Void> response = new ResponseDTO<>();
+		item.setApproverId(user.getUserId());
+		int result = service.reapprove(item);
 
-		int result = service.processApproval(action);
+		if (result == 1) {
+			response.setStatus("succ");
+		} else {
+			response.setStatus("fail");
+		}
+
+		return response;
+	}
+
+	@PatchMapping
+	public ResponseDTO<Void> process(@CurrentUser UserDTO user, @RequestBody ApprovalActionDTO action) {
+
+		ResponseDTO<Void> response = new ResponseDTO<>();
+		action.setApproverId(user.getUserId());
+		action.setLevelNo(user.getLevelNo());
+
+		int result = service.process(action);
 
 		if (result == 1) {
 			response.setStatus("succ");

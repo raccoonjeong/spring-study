@@ -54,7 +54,7 @@ public class AuthController {
 			// Access
 			String at = accessTokenService.create(user.getUserId(), user.getEmpName(), user.getLevelNo());
 			// Refresh (화이트리스트 저장 + httpOnly 쿠키)
-			String rt = refreshTokenService.create(user.getUserId());
+			String rt = refreshTokenService.create(user.getUserId(), user.getEmpName(), user.getLevelNo());
 			Jws<Claims> parsed = refreshTokenService.parse(rt);
 			String jti = parsed.getBody().getId();
 			refreshStore.bind(user.getUserId(), jti);
@@ -91,6 +91,8 @@ public class AuthController {
 			Jws<Claims> jws = refreshTokenService.parse(rt);
 			Claims c = jws.getBody();
 			String userId = c.getSubject();
+			String empName = c.get("empName", String.class);
+			Integer levelNo = c.get("levelNo", Integer.class);
 			String jti = c.getId();
 
 			if (!refreshStore.isValid(userId, jti)) {
@@ -100,11 +102,11 @@ public class AuthController {
 			}
 
 			// 회전: 새 RT + 새 AT
-			String newRt = refreshTokenService.create(userId);
+			String newRt = refreshTokenService.create(userId, empName, levelNo);
 			String newJti = refreshTokenService.parse(newRt).getBody().getId();
 			refreshStore.bind(userId, newJti);
 
-			String newAt = accessTokenService.create(userId, "", 1); // 필요시 DB조회로 name/role 채우기
+			String newAt = accessTokenService.create(userId, empName, levelNo); // 필요시 DB조회로 name/role 채우기
 
 			int maxAge = (int)(refreshExpDay * 24 * 60 * 60);
 			cookieSupport.setRefreshCookie(res, newRt, maxAge);

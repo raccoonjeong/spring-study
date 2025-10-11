@@ -94,6 +94,13 @@
 		select ifnull(max(num), 0) + 1 from approval_list
 	</select>
 
+	<select id="getCurrentStatus">
+		select
+			li.status_code
+		from approval_list li
+		where li.num = #{num}
+	</select>
+
 	<insert id="create" parameterType="com.hye.approvals.dto.ApprovalItemDTO"
 		useGeneratedKeys="true" keyProperty="num">
 		insert into
@@ -118,6 +125,20 @@
 				#{statusCode}
 			)
 	</insert>
+
+	<update id="update" parameterType="com.hye.approvals.dto.ApprovalItemDTO">
+		update
+		    approval_list
+		set
+			title=#{title},
+			content=#{content},
+			status_code=#{statusCode},
+			approver_id=#{approverId},
+			appr_date=now()
+		where
+		    num = #{num}
+
+	</update>
 
 	<insert id="insertHistory" parameterType="com.hye.approvals.dto.ApprovalHistoryDTO">
 	    insert into

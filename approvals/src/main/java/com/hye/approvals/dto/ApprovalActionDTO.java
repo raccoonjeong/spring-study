@@ -4,18 +4,38 @@ public class ApprovalActionDTO {
 
 	private Integer num; // 글번호
 
-	private String approverId; // 요청자 ID
+	private String action;
 
+	private String approverId; // 요청자 ID
+	private Integer levelNo;
 	private String statusCode;
 
 	public ApprovalActionDTO() {
 
 	}
 
-	public ApprovalActionDTO(Integer num, String approverId, String statusCode) {
+	public ApprovalActionDTO(Integer num, String action, String approverId, Integer levelNo, String statusCode) {
 		this.num = num;
+		this.action = action;
 		this.approverId = approverId;
+		this.levelNo = levelNo;
 		this.statusCode = statusCode;
+	}
+
+	public String getAction() {
+		return action;
+	}
+
+	public void setAction(String action) {
+		this.action = action;
+	}
+
+	public Integer getLevelNo() {
+		return levelNo;
+	}
+
+	public void setLevelNo(Integer levelNo) {
+		this.levelNo = levelNo;
 	}
 
 	public Integer getNum() {

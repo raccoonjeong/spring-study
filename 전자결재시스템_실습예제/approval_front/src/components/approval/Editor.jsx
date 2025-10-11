@@ -7,7 +7,12 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { useAuth } from "../../hooks/AuthContext";
 
-export default function Editor({ itemProps, isEdit = false, onProcess }) {
+export default function Editor({
+  itemProps,
+  isEdit = false,
+  isRejected = false,
+  onProcess,
+}) {
   const [item, setItem] = useState({
     title: "",
     content: "",
@@ -42,7 +47,7 @@ export default function Editor({ itemProps, isEdit = false, onProcess }) {
     if (isEdit) {
       setBasicInfo();
     }
-  }, [itemProps, isEdit]);
+  }, [itemProps]);
 
   return (
     <div className="mb-8 rounded-xl border border-stone-200 bg-white shadow-sm">
@@ -68,8 +73,7 @@ export default function Editor({ itemProps, isEdit = false, onProcess }) {
             type="text"
             value={item.writer}
             name="writer"
-            onChange={setStateByName}
-            disabled={!isEdit}
+            disabled={true}
             className="w-full rounded-lg border border-stone-300 bg-stone-100 px-3 py-2 text-sm text-stone-700"
           />
         </div>
@@ -79,7 +83,7 @@ export default function Editor({ itemProps, isEdit = false, onProcess }) {
           <input
             type="text"
             placeholder="제목을 입력하세요"
-            disabled={!isEdit}
+            disabled={!isEdit && !isRejected}
             value={item.title}
             name="title"
             onChange={setStateByName}
@@ -97,12 +101,12 @@ export default function Editor({ itemProps, isEdit = false, onProcess }) {
             value={item.content}
             name="content"
             onChange={setStateByName}
-            disabled={!isEdit}
+            disabled={!isEdit && !isRejected}
             className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm placeholder-stone-400 focus:border-stone-500 focus:outline-none"
           ></textarea>
         </div>
         {/* 버튼 */}
-        {!isEdit ? (
+        {!isEdit && !isRejected && (
           <div className="mt-2 flex justify-end gap-2">
             <button
               className="rounded-lg border border-stone-300 px-4 py-2 text-sm hover:bg-stone-50"
@@ -113,13 +117,13 @@ export default function Editor({ itemProps, isEdit = false, onProcess }) {
             {user.levelNo >= 3 && (
               <>
                 <button
-                  onClick={() => onProcess(getNextStatusByReject)}
+                  onClick={() => onProcess({ ...item, action: "REJECT" })}
                   className="rounded-lg bg-blue-900 px-4 py-2 text-sm text-white hover:opacity-90"
                 >
                   반려
                 </button>
                 <button
-                  onClick={() => onProcess(getNextStatusByApprove)}
+                  onClick={() => onProcess({ ...item, action: "APPROVE" })}
                   className="rounded-lg bg-green-900 px-4 py-2 text-sm text-white hover:opacity-90"
                 >
                   결재
@@ -127,7 +131,28 @@ export default function Editor({ itemProps, isEdit = false, onProcess }) {
               </>
             )}
           </div>
-        ) : (
+        )}
+
+        {!isEdit && isRejected && (
+          <div className="mt-2 flex justify-end gap-2">
+            <button
+              className="rounded-lg border border-stone-300 px-4 py-2 text-sm hover:bg-stone-50"
+              onClick={goBack}
+            >
+              취소
+            </button>
+            <button
+              onClick={() =>
+                onProcess({ ...item, action: "APPROVE" }, isRejected)
+              }
+              className="rounded-lg bg-green-900 px-4 py-2 text-sm text-white hover:opacity-90"
+            >
+              결재
+            </button>
+          </div>
+        )}
+
+        {isEdit && (
           <div className="mt-2 flex justify-end gap-2">
             <button
               className="rounded-lg border border-stone-300 px-4 py-2 text-sm hover:bg-stone-50"
@@ -137,13 +162,13 @@ export default function Editor({ itemProps, isEdit = false, onProcess }) {
             </button>
             <button
               className="rounded-lg bg-red-900 px-4 py-2 text-sm text-white hover:opacity-90"
-              onClick={() => onProcess("-")}
+              onClick={() => onProcess({ ...item, statusCode: "-" })}
             >
               임시저장
             </button>
             <button
               className="rounded-lg bg-green-900 px-4 py-2 text-sm text-white hover:opacity-90"
-              onClick={() => onProcess("TMP")}
+              onClick={() => onProcess({ ...item, statusCode: "TMP" })}
             >
               결재
             </button>

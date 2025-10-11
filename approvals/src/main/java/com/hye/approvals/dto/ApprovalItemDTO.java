@@ -4,6 +4,9 @@ import java.time.LocalDate;
 
 public class ApprovalItemDTO {
 
+	private String requestedWriterId;
+	private String requestedStatusCode;
+
 	private Integer rowNum;
 	private Integer num;
 	private String writerId;
@@ -18,6 +21,23 @@ public class ApprovalItemDTO {
 	private String approver;
 	private String approverPositionName;
 
+
+
+	public String getRequestedWriterId() {
+		return requestedWriterId;
+	}
+
+	public void setRequestedWriterId(String requestedWriterId) {
+		this.requestedWriterId = requestedWriterId;
+	}
+
+	public String getRequestedStatusCode() {
+		return requestedStatusCode;
+	}
+
+	public void setRequestedStatusCode(String requestedStatusCode) {
+		this.requestedStatusCode = requestedStatusCode;
+	}
 
 	public Integer getRowNum() {
 		return rowNum;

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.Map;
 import java.util.UUID;
 
 @Component
@@ -25,12 +26,13 @@ public class RefreshTokenService {
         this.expMillis = expDay * 24L * 60L * 60L * 1000L;
     }
 
-    public String create(String userId) {
+    public String create(String userId, String empName, Integer levelNo) {
         long now = System.currentTimeMillis();
         String jti = UUID.randomUUID().toString();
         return Jwts.builder()
                 .setSubject(userId)
                 .setId(jti) // 회전/재사용 탐지용
+                .addClaims(Map.of("empName", empName, "levelNo", levelNo))
                 .setIssuedAt(new Date(now))
                 .setExpiration(new Date(now + expMillis))
                 .signWith(key, SignatureAlgorithm.HS256)

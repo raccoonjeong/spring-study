@@ -1,6 +1,8 @@
 package com.hye.approvals.service;
 
 import com.hye.approvals.dto.*;
+import com.hye.approvals.enums.Action;
+import com.hye.approvals.enums.Status;
 import com.hye.approvals.mapper.ApprovalMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -100,17 +102,89 @@ public class ApprovalServiceImpl implements ApprovalService {
 	}
 	@Override
 	@Transactional
-	public int processApproval(ApprovalActionDTO action) {
+	public int process(ApprovalActionDTO actionDTO) {
 
-		mapper.updateApprovalStatus(action);
+		String requestedStatus = actionDTO.getStatusCode();
+		Integer levelNo = actionDTO.getLevelNo();
+		String action = actionDTO.getAction();
+
+		ApprovalItemDTO currentItem = mapper.getApprovalItem(actionDTO.getNum());
+
+		boolean isAuthor = Objects.equals(currentItem.getWriterId(), actionDTO.getApproverId());
+		String currentStatus = currentItem.getStatusCode();
+
+		Status realNextStatus = this.nextStatus(Status.valueOf(currentStatus),
+				Action.valueOf(action),
+				levelNo,
+				isAuthor);
+
+		if (!Objects.equals(requestedStatus, realNextStatus.toString())) {
+			throw new IllegalArgumentException("INVALID_TRANSITION");
+		}
+        actionDTO.setStatusCode(realNextStatus.toString());
+		mapper.updateApprovalStatus(actionDTO);
 
 		ApprovalHistoryDTO history = new ApprovalHistoryDTO(
-				action.getNum(),
-				action.getApproverId(),
-				action.getStatusCode());
+				actionDTO.getNum(),
+				actionDTO.getApproverId(),
+				actionDTO.getStatusCode());
 		mapper.insertHistory(history);
 		return 1;
 	}
+
+	@Override
+	@Transactional
+	public int reapprove(ApprovalItemDTO item) {
+        ApprovalItemDTO currentItem = mapper.getApprovalItem(item.getNum());
+        if (!Objects.equals(currentItem.getStatusCode(), Status.REJ.toString())) {
+            throw new IllegalArgumentException("INVALID_TRANSITION");
+        }
+        item.setStatusCode(Status.PND.toString());
+		int result = mapper.update(item);
+		ApprovalHistoryDTO history = new ApprovalHistoryDTO(item.getNum(), item.getApproverId(), item.getStatusCode());
+		mapper.insertHistory(history);
+		return 1;
+	}
+
+	public Status nextStatus(Status currentStatus, Action action, int levelNo, boolean isAuthor) {
+		switch (currentStatus) {
+			case TMP:
+				if (action == Action.APPROVE_REQUEST && isAuthor) {
+					if (levelNo <= 2) {
+						return Status.PND;
+					} else {
+						return Status.APR;
+					}
+				}
+				break;
+
+			case PND:
+				if (action == Action.APPROVE && levelNo >= 3) return Status.APR;
+				if (action == Action.REJECT && levelNo >= 3) return Status.REJ;
+				break;
+
+			case APR:
+				if (action == Action.APPROVE && levelNo >= 4) return Status.CMP;
+				if (action == Action.REJECT && levelNo >= 3) return Status.REJ;
+				break;
+
+			case REJ:
+				if (action == Action.APPROVE_REQUEST && isAuthor) {
+					if (levelNo <= 2) {
+						return Status.PND;
+					} else {
+						return Status.APR;
+					}
+				}
+				break;
+
+			case CMP:
+				// 완료는 불변
+				break;
+		}
+		throw new IllegalArgumentException("INVALID_TRANSITION");
+	}
+
 
 	private PageDTO<ApprovalItemDTO> calculatePage(SearchDTO searchDTO) {
 		// TODO Auto-generated method stub
@@ -139,5 +213,6 @@ public class ApprovalServiceImpl implements ApprovalService {
 
 		return pageDTO;
 	}
+
 
 }
