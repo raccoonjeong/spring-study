@@ -1,0 +1,83 @@
+import SizeSelectDemo from "@/components/demos/SizeSelectDemo.jsx";
+
+export const meta = {
+  title: "사이즈 선택하기",
+  subtitle: "SizeSelect",
+  order: 2,
+  group: "Components",
+};
+
+# 사이즈 선택하기 - SizeSelect
+
+<SizeSelectDemo />
+
+## 사용 예시
+
+```jsx
+import React, { useState } from "react";
+import SizeSelect from "@/components/SizeSelect.jsx";
+
+export default function Example() {
+  const [size, setSize] = useState(235);
+  return (
+    <SizeSelect
+      items={[230, 235, 240, 245]} // 전체 목록
+      value={size}
+      disabled={[240]} // 비활성화 목록
+      onChange={setSize}
+    />
+  );
+}
+```
+
+## 컴포넌트 정의
+
+**/components/SizeSelect.jsx**
+
+```jsx
+import { useState } from "react";
+import Button from "@/components/Button";
+
+export default function SizeSelect({
+  items = [],
+  value, // controlled 모드 값 (옵션)
+  defaultValue = null, // uncontrolled 초기값
+  onChange,
+  disabled = [],
+  className = "",
+}) {
+  const isControlled = value !== undefined;
+  const [inner, setInner] = useState(defaultValue);
+  const selected = isControlled ? value : inner;
+
+  const isDisabled = (v) => disabled?.includes?.(v);
+
+  const select = (v) => {
+    if (isDisabled(v)) return;
+    if (v === selected) return; // 같은 값 클릭 시 아무 동작 없음(해제 불가)
+    if (!isControlled) setInner(v);
+    onChange?.(v);
+  };
+
+  return (
+    <div role="radiogroup" className={`flex gap-1 ${className}`}>
+      {items.map((v) => {
+        const isSel = selected === v;
+        return (
+          <Button
+            key={v}
+            type="button"
+            onClick={() => select(v)}
+            disabled={isDisabled(v)}
+            primary={isSel}
+            role="radio"
+            aria-checked={isSel}
+          >
+            {v}
+          </Button>
+        );
+      })}
+    </div>
+  );
+}
+```

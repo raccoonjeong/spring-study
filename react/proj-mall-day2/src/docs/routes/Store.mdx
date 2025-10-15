@@ -1,0 +1,193 @@
+import ExternalLink from "@/components/ExternalLink";
+
+export const meta = {
+  title: "/store",
+  subtitle: "Store",
+  order: 5,
+  group: "routes",
+};
+
+# /store
+
+<ExternalLink href="/store">/store</ExternalLink>
+
+## /pages/Store.jsx
+
+```jsx
+import Container from "@/components/Container";
+import KakaoMap from "@/components/KakaoMap";
+import Button from "@/components/Button";
+import InputText from "@/components/InputText";
+import Select from "@/components/Select";
+import { useState } from "react";
+import clsx from "clsx";
+
+function StoreCard({ store, isActive, onSelect }) {
+  const { concept, title, address, phone } = store;
+  return (
+    <div
+      onClick={onSelect}
+      className={clsx(
+        "border-2 cursor-pointer hover:z-10 flex p-4 hover:bg-gray-200",
+        isActive ? "border-[#0063ba] z-20" : "border-white"
+      )}
+    >
+      <div className="pt-1 pr-8">
+        <img src="/images/icon_marker.png" width={24} />
+      </div>
+      <div className="flex-grow ">
+        <div className="text-[#0063ba] text-sm">
+          [{concept}] {title}
+        </div>
+        <div className="text-xs">{address}</div>
+        <div className=" text-gray-500 text-xs">{phone}</div>
+      </div>
+    </div>
+  );
+}
+
+export default function Store() {
+  const [activeId, setActiveId] = useState(null);
+
+  const stores = [
+    {
+      id: 1,
+      concept: "SPORTS",
+      title: "대구상사",
+      address: "대구광역시 달서구 달서대로 435, 1층 스케쳐스",
+      phone: "053-583-0707",
+      lat: 37.5665,
+      lng: 126.978,
+    },
+    {
+      id: 2,
+      concept: "SPORTS",
+      title: "부산서면점",
+      address: "부산광역시 부산진구 서면로 20",
+      phone: "051-803-1234",
+      lat: 35.1576,
+      lng: 129.059,
+    },
+    {
+      id: 3,
+      concept: "KIDS",
+      title: "대구동성로점",
+      address: "대구광역시 중구 동성로4길 12",
+      phone: "053-425-5678",
+      lat: 35.8685,
+      lng: 128.598,
+    },
+    {
+      id: 4,
+      concept: "SPORTS",
+      title: "인천구월점",
+      address: "인천광역시 남동구 구월로 120",
+      phone: "032-432-7788",
+      lat: 37.4483,
+      lng: 126.701,
+    },
+    {
+      id: 5,
+      concept: "SPORTS",
+      title: "광주충장로점",
+      address: "광주광역시 동구 충장로 55",
+      phone: "062-224-9900",
+      lat: 35.146,
+      lng: 126.919,
+    },
+    {
+      id: 6,
+      concept: "KIDS",
+      title: "대전은행동점",
+      address: "대전광역시 중구 중앙로 123",
+      phone: "042-252-4455",
+      lat: 36.327,
+      lng: 127.427,
+    },
+    {
+      id: 7,
+      concept: "SPORTS",
+      title: "제주중앙점",
+      address: "제주특별자치도 제주시 중앙로 45",
+      phone: "064-752-8800",
+      lat: 33.4996,
+      lng: 126.5312,
+    },
+  ];
+
+  return (
+    <Container>
+      <div className="py-8 space-y-4">
+        <div className="font-bold text-3xl pb-4">매장찾기</div>
+        <div className="bg-gray-100 px-10 py-8 space-y-2">
+          <div className="flex items-center space-x-1">
+            <div className="w-[100px]">주소검색</div>
+            <Select>
+              <option value="">주소 선택</option>
+              <option>서울</option>
+              <option>부산</option>
+              <option>대구</option>
+              <option>인천</option>
+              <option>광주</option>
+              <option>대전</option>
+              <option>울산</option>
+              <option>세종</option>
+              <option>경기</option>
+              <option>강원</option>
+              <option>충북</option>
+              <option>충남</option>
+              <option>전북</option>
+              <option>전남</option>
+              <option>경북</option>
+              <option>경남</option>
+              <option>제주</option>
+            </Select>
+            <InputText placeholder="상세주소 입력" w={300} />
+            <Button primary>매장검색</Button>
+            <div className="flex-grow"></div>
+            <Button>고객센터</Button>
+            <Button>매장 개설 문의</Button>
+          </div>
+          <div className="flex items-center space-x-1">
+            <div className="w-[100px]">컨셉별</div>
+            <Select>
+              <option value="">전체</option>
+              <option>SPORTS</option>
+              <option>KIDS</option>
+              <option>USA</option>
+            </Select>
+          </div>
+        </div>
+        <div className="flex bg-gray-100 px-8 py-6 space-x-16">
+          <div className="w-[500px] h-[420px] overflow-auto flex flex-col -space-y-0.5">
+            {stores?.map((s) => (
+              <StoreCard
+                key={`store-${s.id}`}
+                store={s}
+                isActive={activeId === s.id}
+                onSelect={() => setActiveId(s.id)}
+              />
+            ))}
+          </div>
+          <div className="flex-grow">
+            <KakaoMap
+              markers={stores}
+              activeId={activeId} // ← 현재 포커스
+              focusLevel={5} // ← 클릭 시 줌 레벨(원하면 조정)
+              animate // ← panTo 애니메이션
+              markerIconUrl="/images/icon_marker.png"
+              markerIconSize={{ w: 24, h: 28 }}
+              markerIconAnchor={{ x: 12, y: 28 }}
+              level={7} // 초기 레벨
+              height={420}
+              showMapType
+              showZoom
+              onMarkerClick={setActiveId} // 마커 클릭해도 카드와 동기화
+            />
+          </div>
+        </div>
+      </div>
+    </Container>
+  );
+}
+```

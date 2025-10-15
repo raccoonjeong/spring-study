@@ -1,11 +1,17 @@
+import React, { Suspense, lazy } from "react"; // Suspense: 로딩중화면 보여주기
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Home from "@/pages/Home";
-import ShoppingCart from "@/pages/ShoppingCart";
 import NotFound from "@/pages/NotFound";
 import GlobalLayout from "@/layouts/GlobalLayout";
-import ProductList from "@/pages/ProductList";
-import ProductDetail from "@/pages/ProductDetail";
-import Store from "@/pages/Store";
+import TestList from "./test/TestList";
+import TestDetail from "./test/TestDetail";
+import TestLayout from "./test/TestLayout";
+
+const ShoppingCart = lazy(() => import("@/pages/ShoppingCart"));
+const ProductList = lazy(() => import("@/pages/ProductList"));
+const ProductDetail = lazy(() => import("@/pages/ProductDetail"));
+const Store = lazy(() => import("@/pages/Store"));
+
 /*Sample*/
 import SampleCart from "@/samples/SampleCart";
 import SampleHome from "@/samples/SampleHome";
@@ -14,6 +20,29 @@ import SampleProductList from "@/samples/SampleProductList";
 import SampleStore from "@/samples/SampleStore";
 
 const router = createBrowserRouter([
+  {
+    path: "test",
+    element: <TestLayout />,
+    children: [
+      {
+        index: true,
+        element: <TestList />,
+      },
+      {
+        path: ":category",
+        element: <TestList />,
+      },
+      {
+        path: "list",
+        element: <TestList />,
+      },
+      {
+        path: "detail/:id",
+        element: <TestDetail />,
+      },
+      { path: "*", element: <NotFound /> },
+    ],
+  },
   {
     path: "/",
     element: <GlobalLayout />,
@@ -37,8 +66,19 @@ const router = createBrowserRouter([
  * </BrowserRouter>
  */
 
+function NowLoading() {
+  return (
+    <div className="flex items-center justify-center min-h-screen w-full p-6">
+      로딩중....
+    </div>
+  );
+}
 function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <Suspense fallback={<NowLoading />}>
+      <RouterProvider router={router} />
+    </Suspense>
+  );
 }
 
 export default App;

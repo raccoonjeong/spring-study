@@ -1,4 +1,32 @@
+import Button from "@/components/Button";
+import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { getProduct } from "@/data/sampleData";
 export default function ProductDetail() {
+  const { id } = useParams();
+  const [nowSize, setNowSize] = useState(null);
+  const [product, setProduct] = useState({
+    id: "",
+    name: "",
+    isNew: "",
+    isBest: "",
+    originalPrice: "",
+    sellingPrice: "",
+    discountRate: "",
+    img: "",
+    starRate: "",
+    reviewCount: "",
+    sizeList: [],
+  });
+
+  useEffect(() => {
+    const currentProduct = getProduct(id);
+    setProduct(currentProduct);
+    const center = Math.floor(currentProduct.sizeList.length / 2);
+    debugger;
+    setNowSize(currentProduct.sizeList[center].size);
+  }, [id]);
+
   return (
     <div className="mx-auto w-full max-w-[1200px] px-4">
       <div className="py-8 flex space-x-8">
@@ -9,76 +37,66 @@ export default function ProductDetail() {
                 alt=""
                 draggable="false"
                 className="w-full h-full object-cover pointer-events-none select-none will-change-transform transition-transform duration-600"
-                src="https://cdn.skecherskorea.co.kr/pro_img/SL0WPCFY052_1.jpg?v=250904"
+                src={product.img}
               />
             </div>
           </div>
           <div className="grid grid-cols-5 gap-2">
             <div className="border-[#0063ba] border p-2 aspect-square cursor-pointer">
-              <img src="https://cdn.skecherskorea.co.kr/pro_img/SL0WPCFY052_1.jpg?v=250904" />
+              <img src={product.img} />
             </div>
             <div className="border border-gray-200 p-2 aspect-square cursor-pointer">
-              <img src="https://cdn.skecherskorea.co.kr/pro_img/SL0WPCFY052_2.jpg?v=250904" />
+              <img src={product.img} />
             </div>
             <div className="border border-gray-200 p-2 aspect-square cursor-pointer">
-              <img src="https://cdn.skecherskorea.co.kr/pro_img/SL0WPCFY052_3.jpg?v=250904" />
+              <img src={product.img} />
             </div>
             <div className="border border-gray-200 p-2 aspect-square cursor-pointer">
-              <img src="https://cdn.skecherskorea.co.kr/pro_img/SL0WPCFY052_4.jpg?v=250904" />
+              <img src={product.img} />
             </div>
             <div className="border border-gray-200 p-2 aspect-square cursor-pointer">
-              <img src="https://cdn.skecherskorea.co.kr/pro_img/SL0WPCFY052_5.jpg?v=250904" />
+              <img src={product.img} />
             </div>
             <div className="border border-gray-200 p-2 aspect-square cursor-pointer">
-              <img src="https://cdn.skecherskorea.co.kr/pro_img/SL0WPCFY052_6.jpg?v=250904" />
+              <img src={product.img} />
             </div>
             <div className="border border-gray-200 p-2 aspect-square cursor-pointer">
-              <img src="https://cdn.skecherskorea.co.kr/pro_img/SL0WPCFY052_7.jpg?v=250904" />
+              <img src={product.img} />
             </div>
             <div className="border border-gray-200 p-2 aspect-square cursor-pointer">
-              <img src="https://cdn.skecherskorea.co.kr/pro_img/SL0WPCFY052_8.jpg?v=250904" />
+              <img src={product.img} />
             </div>
             <div className="border border-gray-200 p-2 aspect-square cursor-pointer">
-              <img src="https://cdn.skecherskorea.co.kr/pro_img/SL0WPCFY052_9.jpg?v=250904" />
+              <img src={product.img} />
             </div>
           </div>
         </div>
         <div className="flex-grow space-y-3">
-          <div className="font-extrabold text-4xl">아치핏 2.0 (슬립인스)</div>
-          <div className="font-bold text-gray-500">ARCH FIT 2.0 (SLIP INS)</div>
+          <div className="font-extrabold text-4xl">{product.name}</div>
+          <div className="font-bold text-gray-500">{product.name}</div>
           <div className="pb-4 text-xl">
-            <span className="font-bold">129,000</span> 원
+            <span className="font-bold">
+              {Number(product.sellingPrice).toLocaleString()}
+            </span>{" "}
+            원
           </div>
           <div className="font-bold text-gray-700">SP3MDCFW022 NAT</div>
           <div className="font-bold">NAT</div>
           <div className="space-x-1 flex">
             <div className="border border-white hover:border-gray-300 cursor-pointer">
-              <img
-                className="h-[44px]"
-                src="https://cdn.skecherskorea.co.kr/pro_img/SL0WPCFY051_1.jpg?v=250904"
-              />
+              <img className="h-[44px]" src={product.img} />
             </div>
             <div className="border border-[#0063ba] cursor-pointer">
-              <img
-                className="h-[44px]"
-                src="https://cdn.skecherskorea.co.kr/pro_img/SL0WPCFY052_1.jpg?v=250904"
-              />
+              <img className="h-[44px]" src={product.img} />
             </div>
           </div>
           <div className="font-bold">SIZE</div>
           <div className="flex space-x-1">
-            <button className="cursor-pointer border border-[#0063ba] font-semibold flex items-center text-[#0063ba] bg-white px-4 h-[38px] text-sm">
-              <div>230</div>
-            </button>
-            <button className="cursor-pointer border border-[#0063ba] font-semibold flex items-center bg-[#0063ba] text-white px-4 h-[38px] text-sm">
-              <div>235</div>
-            </button>
-            <button className="cursor-pointer border border-[#0063ba] font-semibold flex items-center text-[#0063ba] bg-white px-4 h-[38px] text-sm">
-              <div>240</div>
-            </button>
-            <button className="cursor-pointer border border-[#0063ba] font-semibold flex items-center text-[#0063ba] bg-white px-4 h-[38px] text-sm">
-              <div>245</div>
-            </button>
+            {product.sizeList.map((option, i) => (
+              <Button primary={Number(option.size) === Number(nowSize)} key={i}>
+                <div>{option.size}</div>
+              </Button>
+            ))}
           </div>
           <div className="font-bold">QTY</div>
           <div className="flex h-[38px] w-full max-w-[280px] border border-gray-300 overflow-hidden">
@@ -128,16 +146,16 @@ export default function ProductDetail() {
             </button>
           </div>
           <div className="space-y-1 pt-8">
-            <button className="cursor-pointer border border-[#0063ba] font-semibold flex items-center bg-[#0063ba] text-white block w-full px-4 h-[60px] text-lg justify-center">
+            <Button full primary size="lg">
               <div>바로구매</div>
-            </button>
+            </Button>
             <div className="flex space-x-1">
-              <button className="cursor-pointer border border-[#0063ba] font-semibold flex items-center text-[#0063ba] bg-white block w-full px-4 h-[60px] text-lg justify-center">
+              <Button full size="lg">
                 <div>장바구니</div>
-              </button>
-              <button className="cursor-pointer border border-[#0063ba] font-semibold flex items-center text-[#0063ba] bg-white block w-full px-4 h-[60px] text-lg justify-center">
+              </Button>
+              <Button full size="lg">
                 <div>위시리스트</div>
-              </button>
+              </Button>
             </div>
           </div>
         </div>

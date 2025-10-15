@@ -1,0 +1,274 @@
+import KakaoMap from "@/components/KakaoMap";
+import { useState } from "react";
+
+export default function SampleStore() {
+  const [activeId, setActiveId] = useState(null);
+
+  const stores = [
+    {
+      id: 1,
+      concept: "SPORTS",
+      title: "대구상사",
+      address: "대구광역시 달서구 달서대로 435, 1층 스케쳐스",
+      phone: "053-583-0707",
+      lat: 37.5665,
+      lng: 126.978,
+    },
+    {
+      id: 2,
+      concept: "SPORTS",
+      title: "부산서면점",
+      address: "부산광역시 부산진구 서면로 20",
+      phone: "051-803-1234",
+      lat: 35.1576,
+      lng: 129.059,
+    },
+    {
+      id: 3,
+      concept: "KIDS",
+      title: "대구동성로점",
+      address: "대구광역시 중구 동성로4길 12",
+      phone: "053-425-5678",
+      lat: 35.8685,
+      lng: 128.598,
+    },
+    {
+      id: 4,
+      concept: "SPORTS",
+      title: "인천구월점",
+      address: "인천광역시 남동구 구월로 120",
+      phone: "032-432-7788",
+      lat: 37.4483,
+      lng: 126.701,
+    },
+    {
+      id: 5,
+      concept: "SPORTS",
+      title: "광주충장로점",
+      address: "광주광역시 동구 충장로 55",
+      phone: "062-224-9900",
+      lat: 35.146,
+      lng: 126.919,
+    },
+    {
+      id: 6,
+      concept: "KIDS",
+      title: "대전은행동점",
+      address: "대전광역시 중구 중앙로 123",
+      phone: "042-252-4455",
+      lat: 36.327,
+      lng: 127.427,
+    },
+    {
+      id: 7,
+      concept: "SPORTS",
+      title: "제주중앙점",
+      address: "제주특별자치도 제주시 중앙로 45",
+      phone: "064-752-8800",
+      lat: 33.4996,
+      lng: 126.5312,
+    },
+  ];
+  return (
+    <div className="mx-auto w-full max-w-[1200px] px-4">
+      <div className="py-8 space-y-4">
+        <div className="font-bold text-3xl pb-4">매장찾기</div>
+        <div className="bg-gray-100 px-10 py-8 space-y-2">
+          <div className="flex items-center space-x-1">
+            <div className="w-[100px]">주소검색</div>
+            <div className="relative inline-block">
+              <select
+                defaultValue=""
+                className="min-w-[150px] text-sm rounded border border-gray-200 bg-white px-4 py-2 pr-8 appearance-none"
+              >
+                <option value="">주소 선택</option>
+                <option>서울</option>
+                <option>부산</option>
+                <option>대구</option>
+                <option>인천</option>
+                <option>광주</option>
+                <option>대전</option>
+                <option>울산</option>
+                <option>세종</option>
+                <option>경기</option>
+                <option>강원</option>
+                <option>충북</option>
+                <option>충남</option>
+                <option>전북</option>
+                <option>전남</option>
+                <option>경북</option>
+                <option>경남</option>
+                <option>제주</option>
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-500">
+                <svg
+                  className="w-4 h-4"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 9l6 6 6-6"
+                  ></path>
+                </svg>
+              </div>
+            </div>
+            <input
+              className="min-w-[150px] w-[300px] text-sm rounded border border-gray-200 bg-white px-4 py-2 pr-8"
+              placeholder="상세주소 입력"
+              type="text"
+            />
+            <button className="cursor-pointer border border-[#0063ba] font-semibold flex items-center bg-[#0063ba] text-white px-4 h-[38px] text-sm">
+              <div>매장검색</div>
+            </button>
+            <div className="flex-grow"></div>
+            <button className="cursor-pointer border border-[#0063ba] font-semibold flex items-center text-[#0063ba] bg-white px-4 h-[38px] text-sm">
+              <div>고객센터</div>
+            </button>
+            <button className="cursor-pointer border border-[#0063ba] font-semibold flex items-center text-[#0063ba] bg-white px-4 h-[38px] text-sm">
+              <div>매장 개설 문의</div>
+            </button>
+          </div>
+          <div className="flex items-center space-x-1">
+            <div className="w-[100px]">컨셉별</div>
+            <div className="relative inline-block">
+              <select
+                defaultValue=""
+                className="min-w-[150px] text-sm rounded border border-gray-200 bg-white px-4 py-2 pr-8 appearance-none"
+              >
+                <option value="">전체</option>
+                <option>SPORTS</option>
+                <option>KIDS</option>
+                <option>USA</option>
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-500">
+                <svg
+                  className="w-4 h-4"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 9l6 6 6-6"
+                  ></path>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="flex bg-gray-100 px-8 py-6 space-x-16">
+          <div className="w-[500px] h-[420px] overflow-auto flex flex-col -space-y-0.5">
+            <div className="border-2 cursor-pointer hover:z-10 flex p-4 hover:bg-gray-200 border-white">
+              <div className="pt-1 pr-8">
+                <img width="24" src="/images/icon_marker.png" />
+              </div>
+              <div className="flex-grow">
+                <div className="text-[#0063ba] text-sm">[SPORTS] 대구상사</div>
+                <div className="text-xs">
+                  대구광역시 달서구 달서대로 435, 1층 스케쳐스
+                </div>
+                <div className="text-gray-500 text-xs">053-583-0707</div>
+              </div>
+            </div>
+            <div className="border-2 cursor-pointer hover:z-10 flex p-4 hover:bg-gray-200 border-white">
+              <div className="pt-1 pr-8">
+                <img width="24" src="/images/icon_marker.png" />
+              </div>
+              <div className="flex-grow">
+                <div className="text-[#0063ba] text-sm">
+                  [SPORTS] 부산서면점
+                </div>
+                <div className="text-xs">부산광역시 부산진구 서면로 20</div>
+                <div className="text-gray-500 text-xs">051-803-1234</div>
+              </div>
+            </div>
+            <div className="border-2 cursor-pointer hover:z-10 flex p-4 hover:bg-gray-200 border-white">
+              <div className="pt-1 pr-8">
+                <img width="24" src="/images/icon_marker.png" />
+              </div>
+              <div className="flex-grow">
+                <div className="text-[#0063ba] text-sm">
+                  [KIDS] 대구동성로점
+                </div>
+                <div className="text-xs">대구광역시 중구 동성로4길 12</div>
+                <div className="text-gray-500 text-xs">053-425-5678</div>
+              </div>
+            </div>
+            <div className="border-2 cursor-pointer hover:z-10 flex p-4 hover:bg-gray-200 border-white">
+              <div className="pt-1 pr-8">
+                <img width="24" src="/images/icon_marker.png" />
+              </div>
+              <div className="flex-grow">
+                <div className="text-[#0063ba] text-sm">
+                  [SPORTS] 인천구월점
+                </div>
+                <div className="text-xs">인천광역시 남동구 구월로 120</div>
+                <div className="text-gray-500 text-xs">032-432-7788</div>
+              </div>
+            </div>
+            <div className="border-2 cursor-pointer hover:z-10 flex p-4 hover:bg-gray-200 border-white">
+              <div className="pt-1 pr-8">
+                <img width="24" src="/images/icon_marker.png" />
+              </div>
+              <div className="flex-grow">
+                <div className="text-[#0063ba] text-sm">
+                  [SPORTS] 광주충장로점
+                </div>
+                <div className="text-xs">광주광역시 동구 충장로 55</div>
+                <div className="text-gray-500 text-xs">062-224-9900</div>
+              </div>
+            </div>
+            <div className="border-2 cursor-pointer hover:z-10 flex p-4 hover:bg-gray-200 border-white">
+              <div className="pt-1 pr-8">
+                <img width="24" src="/images/icon_marker.png" />
+              </div>
+              <div className="flex-grow">
+                <div className="text-[#0063ba] text-sm">
+                  [KIDS] 대전은행동점
+                </div>
+                <div className="text-xs">대전광역시 중구 중앙로 123</div>
+                <div className="text-gray-500 text-xs">042-252-4455</div>
+              </div>
+            </div>
+            <div className="border-2 cursor-pointer hover:z-10 flex p-4 hover:bg-gray-200 border-white">
+              <div className="pt-1 pr-8">
+                <img width="24" src="/images/icon_marker.png" />
+              </div>
+              <div className="flex-grow">
+                <div className="text-[#0063ba] text-sm">
+                  [SPORTS] 제주중앙점
+                </div>
+                <div className="text-xs">제주특별자치도 제주시 중앙로 45</div>
+                <div className="text-gray-500 text-xs">064-752-8800</div>
+              </div>
+            </div>
+          </div>
+          <div className="flex-grow">
+            <KakaoMap
+              markers={stores}
+              activeId={activeId} // ← 현재 포커스
+              focusLevel={5} // ← 클릭 시 줌 레벨(원하면 조정)
+              animate // ← panTo 애니메이션
+              markerIconUrl="/images/icon_marker.png"
+              markerIconSize={{ w: 24, h: 28 }}
+              markerIconAnchor={{ x: 12, y: 28 }}
+              level={7} // 초기 레벨
+              height={420}
+              showMapType
+              showZoom
+              onMarkerClick={setActiveId} // 마커 클릭해도 카드와 동기화
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

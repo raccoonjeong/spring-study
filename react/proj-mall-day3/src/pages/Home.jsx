@@ -1,0 +1,53 @@
+import ProductCard from "@/components/ProductCard";
+import Container from "@/components/Container";
+import ReviewCard from "@/components/ReviewCard";
+
+export default function Home() {
+  return (
+    <div>
+      <div className="h-[300px] w-full bg-stone-200"></div>
+      <Container>
+        <div className="pt-16 pb-8 font-extrabold text-4xl text-center">
+          WEEKLY BEST
+        </div>
+        <div className="flex font-extrabold text-xl pb-16 space-x-16 justify-center">
+          <div>WOMEN</div>
+          <div className="text-gray-300">MEN</div>
+          <div className="text-gray-300">KIDS</div>
+        </div>
+        <div className="grid grid-cols-5 gap-8">
+          <ProductCard />
+          <ProductCard />
+          <ProductCard />
+          <ProductCard />
+          <ProductCard />
+          <ProductCard />
+          <ProductCard />
+          <ProductCard />
+          <ProductCard />
+          <ProductCard />
+        </div>
+        <div className="pt-16 pb-8 font-extrabold text-4xl text-center">
+          NEW ARRIVAL
+        </div>
+        <div className="flex font-extrabold text-xl pb-16 space-x-16 justify-center">
+          <div>WOMEN</div>
+          <div className="text-gray-300">MEN</div>
+          <div className="text-gray-300">KIDS</div>
+        </div>
+        <div className="grid grid-cols-5 gap-8">
+          <ProductCard />
+          <ProductCard />
+          <ProductCard />
+          <ProductCard />
+          <ProductCard />
+          <ProductCard />
+          <ProductCard />
+          <ProductCard />
+          <ProductCard />
+          <ProductCard />
+        </div>
+      </Container>
+    </div>
+  );
+}
