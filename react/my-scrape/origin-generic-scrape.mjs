@@ -4,30 +4,9 @@ import path from "node:path";
 import { URL as NodeURL } from "node:url";
 
 const config = {
-  url: "",
-  urls: [
-    {
-      category: "women",
-      url: "https://www.skecherskorea.co.kr/sub_product/list.php?adv=Y&cate=0002_",
-    },
-    {
-      category: "men",
-      url: "https://www.skecherskorea.co.kr/sub_product/list.php?adv=Y&cate=0001_",
-    },
-    {
-      category: "kids",
-      url: "https://www.skecherskorea.co.kr/sub_product/list.php?adv=Y&cate=0003_",
-    },
-    {
-      category: "best",
-      url: "https://www.skecherskorea.co.kr/sub_product/list.php?adv=Y&cate=0005_",
-    },
-    {
-      category: "new",
-      url: "https://www.skecherskorea.co.kr/sub_product/list.php?adv=Y&cate=0006_",
-    },
-  ],
+  url: "https://www.skecherskorea.co.kr/sub_product/list.php?cate=0002_0065_0014_&filter_size=&filter_color=&filter_func=&filter_price=&filter_heel=&filter_wide=&filter_weight=&filter_info=&orderby=&pg=2",
   listSelector: ".prod_st",
+  category: "women",
   fields: [
     {
       key: "title",
@@ -50,10 +29,23 @@ const config = {
       mode: "arr",
     },
     {
-      key: "imgArr",
-      selector: ".re va_wrap",
-      mode: "img",
-      attr: "src",
+      key: "badges",
+      selector: ".con_wrap > .icon",
+      mode: "arr",
+    },
+    {
+      key: "sizes",
+      selector: ".size ul.list li",
+      mode: "int", // "250" -> 250
+      all: true, // 노드들 전부 배열로 모으기
+      arrayClean: true,
+    },
+    {
+      key: "disabledSizes",
+      selector: ".size ul.list li.off",
+      mode: "int",
+      all: true,
+      arrayClean: true,
     },
   ],
   outPrefix: "example",
@@ -114,9 +106,6 @@ function absUrl(base, maybe) {
 function textOf($, node) {
   return $(node).text().replace(/\s+/g, " ").trim();
 }
-function imgSrcOf($, node) {
-  return $(node).attr("src")?.trim() || "";
-}
 function toIntKRW(s) {
   if (!s) return null;
   const t = String(s).replace(/[^\d]/g, "");
@@ -149,8 +138,6 @@ function findWithPriority($root, $, field) {
   const sels = normalizeSelectors(field);
   for (const sel of sels) {
     const $nodes = $root.find(sel);
-    if (sel === ".re va_wrap") {
-    }
     if ($nodes.length) return $nodes;
   }
   return $();
@@ -183,52 +170,88 @@ async function scrapeWithConfig(conf) {
     const obj = {};
 
     for (const f of fields) {
-      const { key, mode = "text", attr, absolute = false } = f;
+      const {
+        key,
+        mode = "text",
+        attr,
+        absolute = false,
+        all = false,
+        arrayClean = false,
+        value, // ← mode: "const" 대비
+      } = f;
       if (!key) continue;
 
-      let val = null;
-
-      const $nodes = findWithPriority($item, $, f);
-      if (!$nodes.length && mode !== "img") continue;
-
-      const $first = $nodes.first();
-
-      if (mode === "text") {
-        val = textOf($, $first);
-      } else if (mode === "img") {
-        const imgSrcList = $item
-          .find("span.re.va_wrap img")
-          .map((i, el) => $(el).attr("src"))
-          .get();
-        val = imgSrcList;
-      } else if (mode === "attr") {
-        const raw = attr ? pickAttr($first, attr) : "";
-        val = absolute ? absUrl(conf.url, raw) : raw;
-      } else if (mode === "html") {
-        val = $first.html()?.trim() || "";
-      } else if (mode === "int") {
-        val = toIntKRW(textOf($, $first));
-      } else if (mode === "arr") {
-        // 공백 단위로 분리된 텍스트 배열
-        const text = textOf($, $first);
-        val = text ? text.split(/\s+/).filter(Boolean) : [];
-      } else {
-        val = textOf($, $first);
+      // mode: "const"면 DOM 탐색 없이 바로 값 지정
+      if (mode === "const") {
+        obj[key] = value;
+        continue;
       }
 
-      if (val != null && String(val).trim() !== "") obj[key] = val;
+      const $nodes = findWithPriority($item, $, f);
+      if (!$nodes.length) continue;
+
+      if (all) {
+        const arr = [];
+        $nodes.each((__, node) => {
+          const $n = $(node);
+          let val = null;
+
+          if (mode === "text") val = textOf($, $n);
+          else if (mode === "attr") {
+            const raw = attr ? pickAttr($n, attr) : "";
+            val = absolute ? absUrl(conf.url, raw) : raw;
+          } else if (mode === "html") val = $n.html()?.trim() || "";
+          else if (mode === "int") val = toIntKRW(textOf($, $n));
+          else if (mode === "arr") {
+            const t = textOf($, $n);
+            const parts = t ? t.split(/\s+/).filter(Boolean) : [];
+            if (parts.length) arr.push(...parts);
+            val = null;
+          } else val = textOf($, $n);
+
+          if (mode !== "arr") {
+            const ok = Array.isArray(val)
+              ? val.length > 0
+              : val != null && String(val).trim() !== "";
+            if (ok) arr.push(val);
+          }
+        });
+        obj[key] = arrayClean ? Array.from(new Set(arr)) : arr;
+        continue;
+      }
+
+      const $first = $nodes.first();
+      let val = null;
+      if (mode === "text") val = textOf($, $first);
+      else if (mode === "attr") {
+        const raw = attr ? pickAttr($first, attr) : "";
+        val = absolute ? absUrl(conf.url, raw) : raw;
+      } else if (mode === "html") val = $first.html()?.trim() || "";
+      else if (mode === "int") val = toIntKRW(textOf($, $first));
+      else if (mode === "arr") {
+        const t = textOf($, $first);
+        val = t ? t.split(/\s+/).filter(Boolean) : [];
+      } else val = textOf($, $first);
+
+      const shouldSet = Array.isArray(val)
+        ? val.length > 0
+        : val != null && String(val).trim() !== "";
+      if (shouldSet) obj[key] = val;
     }
 
-    // 후처리 훅
-    const finalObj = conf.postProcess ? conf.postProcess(obj) : obj;
+    // ★ 하드코딩 category 주입
+    if (conf.category !== undefined) {
+      obj.category = conf.category;
+    }
 
+    const finalObj = conf.postProcess ? conf.postProcess(obj) : obj;
     if (!conf.dropEmpty || !isEmptyObject(finalObj)) results.push(finalObj);
   });
 
   return results;
 }
 
-async function saveResult(items, category, { url, outPrefix = "scrape" }) {
+async function saveResult(items, { url, outPrefix = "scrape" }) {
   const dir = path.resolve("result");
   await fs.mkdir(dir, { recursive: true });
   const now = new Date();
@@ -245,7 +268,7 @@ async function saveResult(items, category, { url, outPrefix = "scrape" }) {
   try {
     host = new NodeURL(url).host.replace(/[:/\\]/g, "_");
   } catch {}
-  const file = path.join(dir, `${ts}_${outPrefix}_${host}_${category}.json`);
+  const file = path.join(dir, `${ts}_${outPrefix}_${host}.json`);
   await fs.writeFile(
     file,
     JSON.stringify({ count: items.length, items }, null, 2),
@@ -255,19 +278,16 @@ async function saveResult(items, category, { url, outPrefix = "scrape" }) {
 }
 
 (async () => {
-  for (let i = 0; i < config.urls.length; i++) {
-    try {
-      config.url = config.urls[i].url;
-      const items = await scrapeWithConfig(config);
-      console.log(JSON.stringify({ count: items.length, items }, null, 2));
-      const saved = await saveResult(items, config.urls[i].category, {
-        url: config.url,
-        outPrefix: config.outPrefix || "scrape",
-      });
-      console.error(`saved: ${saved}`);
-    } catch (err) {
-      console.error("ERROR:", err?.stack || err?.message || String(err));
-      process.exit(1);
-    }
+  try {
+    const items = await scrapeWithConfig(config);
+    console.log(JSON.stringify({ count: items.length, items }, null, 2));
+    const saved = await saveResult(items, {
+      url: config.url,
+      outPrefix: config.outPrefix || "scrape",
+    });
+    console.error(`saved: ${saved}`);
+  } catch (err) {
+    console.error("ERROR:", err?.stack || err?.message || String(err));
+    process.exit(1);
   }
 })();

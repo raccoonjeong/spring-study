@@ -2,6 +2,8 @@ import Button from "@/components/Button";
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getProduct } from "@/data/sampleData";
+import Counter from "@/components/Counter";
+
 export default function ProductDetail() {
   const { id } = useParams();
   const [nowSize, setNowSize] = useState(null);
@@ -18,12 +20,12 @@ export default function ProductDetail() {
     reviewCount: "",
     sizeList: [],
   });
+  const [nowCount, setNowCount] = useState(1);
 
   useEffect(() => {
     const currentProduct = getProduct(id);
     setProduct(currentProduct);
     const center = Math.floor(currentProduct.sizeList.length / 2);
-    debugger;
     setNowSize(currentProduct.sizeList[center].size);
   }, [id]);
 
@@ -93,58 +95,17 @@ export default function ProductDetail() {
           <div className="font-bold">SIZE</div>
           <div className="flex space-x-1">
             {product.sizeList.map((option, i) => (
-              <Button primary={Number(option.size) === Number(nowSize)} key={i}>
+              <Button
+                primary={Number(option.size) === Number(nowSize)}
+                key={i}
+                onClick={() => setNowSize(option.size)}
+              >
                 <div>{option.size}</div>
               </Button>
             ))}
           </div>
           <div className="font-bold">QTY</div>
-          <div className="flex h-[38px] w-full max-w-[280px] border border-gray-300 overflow-hidden">
-            <button
-              type="button"
-              disabled=""
-              aria-label="수량 감소"
-              className="w-10 cursor-pointer shrink-0 grid place-items-center text-lg disabled:text-gray-300 disabled:cursor-not-allowed hover:bg-gray-50"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="2"
-                stroke="currentColor"
-                className="size-4"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M5 12h14"
-                ></path>
-              </svg>
-            </button>
-            <div className="flex-1 grid place-items-center text-lg select-none">
-              1
-            </div>
-            <button
-              type="button"
-              aria-label="수량 증가"
-              className="w-10 cursor-pointer shrink-0 grid place-items-center text-lg hover:bg-gray-50"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="2"
-                stroke="currentColor"
-                className="size-4"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 4.5v15m7.5-7.5h-15"
-                ></path>
-              </svg>
-            </button>
-          </div>
+          <Counter defaultValue={1} onChange={setNowCount} />
           <div className="space-y-1 pt-8">
             <Button full primary size="lg">
               <div>바로구매</div>
