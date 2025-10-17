@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="ko"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<body>
+    <table>
+        <thead>
+        <tr>
+            <td>#</td>
+            <td>제품명</td>
+            <td>설명</td>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="product : ${products}">
+            <td th:text="${product.id}">id</td>
+            <td th:text="${product.name}">name</td>
+            <td th:text="${product.description}">description</td>
+        </tr>
+        </tbody>
+    </table>
+</body>
+</html>
