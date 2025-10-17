@@ -6,7 +6,7 @@ export default function ProductCard({ product, idx }) {
   const { title, price, category, isNew, isBest, saleRate, priceBefore } =
     product || {};
   return (
-    <Link to={`/products/detail/${idx}`}>
+    <Link to={`/products/detail/${idx + 1}`}>
       <Card
         className={clsx("font-bold text-lg", {
           "bg-pink-100": category === "women",

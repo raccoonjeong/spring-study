@@ -8,23 +8,15 @@ const config = {
   urls: [
     {
       category: "women",
-      url: "https://www.skecherskorea.co.kr/sub_product/list.php?adv=Y&cate=0002_",
+      url: "https://www.skecherskorea.co.kr/sub_product/list.php?cate=0002_0065_0012_&filter_size=&filter_color=&filter_func=&filter_price=&filter_heel=&filter_wide=&filter_weight=&filter_info=&orderby=sales_price_DESC&pg=1",
     },
     {
       category: "men",
-      url: "https://www.skecherskorea.co.kr/sub_product/list.php?adv=Y&cate=0001_",
+      url: "https://www.skecherskorea.co.kr/sub_product/list.php?cate=0001_0052_0007_&filter_size=&filter_color=&filter_func=&filter_price=&filter_heel=&filter_wide=&filter_weight=&filter_info=&orderby=sales_price_DESC&pg=1",
     },
     {
       category: "kids",
-      url: "https://www.skecherskorea.co.kr/sub_product/list.php?adv=Y&cate=0003_",
-    },
-    {
-      category: "best",
-      url: "https://www.skecherskorea.co.kr/sub_product/list.php?adv=Y&cate=0005_",
-    },
-    {
-      category: "new",
-      url: "https://www.skecherskorea.co.kr/sub_product/list.php?adv=Y&cate=0006_",
+      url: "https://www.skecherskorea.co.kr/sub_product/list.php?cate=0003_0093_0187_&filter_size=&filter_color=&filter_func=&filter_price=&filter_heel=&filter_wide=&filter_weight=&filter_info=&orderby=sales_price_DESC&pg=1",
     },
   ],
   listSelector: ".prod_st",
@@ -114,11 +106,11 @@ function postProcess(item) {
     }
   }
 
-  // 배지에서 isNew/isBEST (있다면)
+  // 배지에서 isNew/isBest (있다면)
   if (Array.isArray(item.badges)) {
     const up = item.badges.map((s) => String(s).toUpperCase());
     item.isNew = up.some((t) => t.includes("NEW"));
-    item.isBEST = up.some((t) => /\bBEST\b/.test(t));
+    item.isBest = up.some((t) => /\bBEST\b/.test(t));
   }
 
   return item;

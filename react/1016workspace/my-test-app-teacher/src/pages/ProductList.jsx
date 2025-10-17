@@ -6,19 +6,15 @@ export default function ProductList() {
   const { category: nowCategory } = useParams();
 
   const filteredProducts = nowCategory
-    ? nowCategory === "new"
-      ? products.filter((p) => p.isNew)
-      : nowCategory === "best"
-      ? products.filter((p) => p.isBest)
-      : products.filter((p) => p.category === nowCategory)
+    ? products.filter((p) => p.category === nowCategory)
     : products;
 
   return (
     <>
       <h1 className="text-2xl font-bold">ProductList {nowCategory}</h1>
       <div className="grid grid-cols-4 gap-4 my-8">
-        {filteredProducts.map((p) => (
-          <ProductCard key={`product-${p.idx}`} idx={p.idx} product={p} />
+        {filteredProducts.map((p, idx) => (
+          <ProductCard key={`product-${idx}`} idx={idx} product={p} />
         ))}
       </div>
     </>
