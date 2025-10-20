@@ -2,7 +2,7 @@ import Container from "@/components/Container";
 
 import ProductCard from "@/components/ProductCard";
 import { useState, useEffect, useRef } from "react";
-import { mockData } from "@/data/sampleData";
+// import { mockData } from "@/data/sampleData";
 import { useParams } from "react-router-dom";
 
 export default function ProductList() {
@@ -13,30 +13,38 @@ export default function ProductList() {
   const isFirst = useRef(true);
 
   useEffect(() => {
-    const currentCategoryData = mockData.filter(
-      (data) => data.category === category
-    );
+    let fetchedData = [];
 
-    const currentSizeList = Array.from(
-      new Set(
-        currentCategoryData
-          .flatMap((data) => data.sizeList)
-          .flatMap((data) => data.size)
-      )
-    ).sort();
-    setSizeList(currentSizeList);
+    const fetchData = async function () {
+      const fetched = await fetch("http://localhost:4000/api/products");
+      fetchedData = await fetched.json();
+      const currentCategoryData = fetchedData.filter(
+        (data) => data.category === category
+      );
 
-    const currentSizeData = currentCategoryData.filter((p) =>
-      p.sizeList.map((option) => option.size).includes(Number(nowSize))
-    );
+      // debugger;
+      const currentSizeList = Array.from(
+        new Set(
+          currentCategoryData
+            .flatMap((data) => data.sizeList)
+            .flatMap((data) => data.size)
+        )
+      ).sort();
+      setSizeList(currentSizeList);
 
-    setProducts(currentSizeData);
-    // debugger;
-    if (isFirst.current) {
-      const center = Math.floor(currentSizeList.length / 2);
-      setNowSize(currentSizeList[center]);
-      isFirst.current = false;
-    }
+      const currentSizeData = currentCategoryData.filter((p) =>
+        p.sizeList.map((option) => option.size).includes(Number(nowSize))
+      );
+
+      setProducts(currentSizeData);
+      // debugger;
+      if (isFirst.current) {
+        const center = Math.floor(currentSizeList.length / 2);
+        setNowSize(currentSizeList[center]);
+        isFirst.current = false;
+      }
+    };
+    fetchData();
   }, [category, nowSize]);
   return (
     <div className="mx-auto w-full max-w-[1200px] px-4">

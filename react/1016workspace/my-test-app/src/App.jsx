@@ -4,6 +4,7 @@ import Home from "./pages/Home.jsx";
 import About from "./pages/About.jsx";
 import ProductDetail from "./pages/ProductDetail.jsx";
 import ProductList from "./pages/ProductList.jsx";
+import TestPage from "./pages/TestPage.jsx";
 
 const router = createBrowserRouter([
   {
@@ -14,6 +15,7 @@ const router = createBrowserRouter([
       { path: "products", element: <ProductList /> },
       { path: "products/:category", element: <ProductList /> },
       { path: "products/detail/:id", element: <ProductDetail /> },
+      { path: "test", element: <TestPage /> },
     ],
   },
 ]);
