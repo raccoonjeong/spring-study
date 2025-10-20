@@ -22,7 +22,6 @@ export default function ProductList() {
         (data) => data.category === category
       );
 
-      // debugger;
       const currentSizeList = Array.from(
         new Set(
           currentCategoryData
@@ -37,7 +36,6 @@ export default function ProductList() {
       );
 
       setProducts(currentSizeData);
-      // debugger;
       if (isFirst.current) {
         const center = Math.floor(currentSizeList.length / 2);
         setNowSize(currentSizeList[center]);

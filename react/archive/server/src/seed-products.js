@@ -63,6 +63,7 @@ function normalizeProduct(p) {
     // 새 필드들 (없으면 기본값/빈값)
     rating: p.rating != null ? Number(p.rating) : 0,
     ratingMax: p.ratingMax != null ? Number(p.ratingMax) : 5,
+    reviewCount: p.reviewCount != null ? Number(p.reviewCount) : 0,
     thumbs: Array.isArray(p.thumbs) ? p.thumbs : [],
     img: p.img ? String(p.img) : null,
     imgOver: p.imgOver ? String(p.imgOver) : null,
@@ -109,10 +110,11 @@ async function main() {
 
     const sql = `
       INSERT INTO mall_products
-      (title, priceText, price, priceArr, badges, sizes, disabledSizes, category,
-       priceBefore, saleRate, isNew, isBest,
-       rating, ratingMax, thumbs, img, imgOver)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      (title, priceText, price, priceArr, badges, 
+      sizes, disabledSizes, category, priceBefore, saleRate, 
+      isNew, isBest, rating, ratingMax, reviewCount, 
+      thumbs, img, imgOver)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     for (let i = 0; i < products.length; i++) {
@@ -124,15 +126,19 @@ async function main() {
           p.price,
           JSON.stringify(p.priceArr),
           JSON.stringify(p.badges),
+
           JSON.stringify(p.sizes),
           p.disabledSizes != null ? JSON.stringify(p.disabledSizes) : null,
           p.category,
           p.priceBefore,
           p.saleRate,
+
           p.isNew ? 1 : 0,
           p.isBest ? 1 : 0,
           p.rating,
           p.ratingMax,
+          p.reviewCount,
+
           JSON.stringify(p.thumbs), // 항상 배열로 저장
           p.img,
           p.imgOver,

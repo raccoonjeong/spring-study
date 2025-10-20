@@ -51,8 +51,10 @@ const config = {
     },
     {
       key: "badges",
-      selector: ".con_wrap > .icon",
+      selector: ".con_wrap > .icon .ico",
       mode: "arr",
+      all: true, // 노드들 전부 배열로 모으기
+      arrayClean: true,
     },
     {
       key: "sizes",
@@ -270,11 +272,12 @@ function extractFrom($ctx, $, fields, baseUrl) {
           const raw = attr ? pickAttr($n, attr) : "";
           val = absolute ? absUrl(baseUrl, raw) : raw;
         } else if (mode === "html") val = $n.html()?.trim() || "";
-        else if (mode === "int") val = toIntKRW(textOf($, $n));
-        else if (mode === "arr") {
+        else if (mode === "int") {
+          val = toIntKRW(textOf($, $n));
+        } else if (mode === "arr") {
           const t = textOf($, $n);
-          const parts = t ? t.split(/\s+/).filter(Boolean) : [];
-          if (parts.length) arr.push(...parts);
+
+          if (t?.length) arr.push(t);
           val = null;
         } else val = textOf($, $n);
 
@@ -296,8 +299,9 @@ function extractFrom($ctx, $, fields, baseUrl) {
       const raw = attr ? pickAttr($first, attr) : "";
       val = absolute ? absUrl(baseUrl, raw) : raw;
     } else if (mode === "html") val = $first.html()?.trim() || "";
-    else if (mode === "int") val = toIntKRW(textOf($, $first));
-    else if (mode === "arr") {
+    else if (mode === "int") {
+      val = toIntKRW(textOf($, $first));
+    } else if (mode === "arr") {
       const t = textOf($, $first);
       val = t ? t.split(/\s+/).filter(Boolean) : [];
     } else val = textOf($, $first);
