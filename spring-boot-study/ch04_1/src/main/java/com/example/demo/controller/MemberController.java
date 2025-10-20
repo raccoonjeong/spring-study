@@ -26,10 +26,14 @@ public class MemberController {
     private final MemberRepository memberRepository;
     private final ArticleService articleService;
 
-    @PostMapping
-    public MemberResponse post(@RequestBody MemberRequest memberRequest) {
-        return memberService.create(memberRequest);
-    }
+//    @PostMapping
+//    public MemberResponse post(@RequestBody MemberRequest memberRequest) {
+//        return memberService.create(memberRequest);
+//    }
+@PostMapping
+public List<MemberResponse> postBatch(@RequestBody List<MemberRequest> memberRequests) {
+    return memberService.createBatch(memberRequests);
+}
 
     @GetMapping
     public List<MemberResponse> getAll() {
