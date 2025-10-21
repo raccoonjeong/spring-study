@@ -9,15 +9,21 @@ import com.example.demo.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
 
+    @Transactional
+    public List<MemberResponse> createBatch(List<MemberRequest> memberRequests) {
+        return memberRequests.stream().map(this::create).toList();
+    }
     public MemberResponse create(MemberRequest memberRequest) {
         Member member = Member.builder()
                 .name(memberRequest.getName())
