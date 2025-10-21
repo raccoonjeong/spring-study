@@ -4,26 +4,37 @@ import { Link } from "react-router-dom";
 export default function ProductCard({ product }) {
   const {
     id,
-    name,
+    title,
+    priceText,
+    price,
+    img,
+    imgOver,
+    rating,
+    reviewCount,
+    priceArr,
+    badges,
+    sizes,
+    disabled,
+    category,
+    priceBefore,
+    saleRate,
     isNew = false,
     isBest = false,
-    originalPrice,
-    sellingPrice,
-    discountRate,
-    img,
-    starRate,
-    reviewCount,
-    sizeList,
   } = product;
 
-  const isSoldOut = sizeList.every((option) => option.isSoldOut);
+  const isAllSoldOut = sizes?.length === disabled?.length;
+  const sizeOptionsWithStatus = sizes
+    ? []
+    : sizes.map((size) => {
+        return { size: size, isSoldOut: disabled.includes(size) };
+      });
 
   return (
     <Link to={`/products/detail/${id}`} data-discover="true">
       <div className="py-2 space-y-2 group min-h-[500px]">
         <div className="bg-stone-100 w-[200px] h-[200px] relative">
           <img src={img} className="w-full aspect-square" />
-          {isSoldOut && (
+          {isAllSoldOut && (
             <div class="absolute top-0 left-0 bottom-0 right-0 bg-black/20 flex items-center justify-center">
               <div class="text-white font-extrabold text-2xl">SOLD OUT</div>
             </div>
@@ -37,11 +48,11 @@ export default function ProductCard({ product }) {
             <img className="h-[44px]" src={img} />
           </div>
         </div>
-        <div className="font-bold">{name}</div>
-        <StarRating score={starRate} count={reviewCount} />
+        <div className="font-bold">{title}</div>
+        <StarRating score={rating} count={reviewCount} />
         <div className="text-gray-500">
           <span className="font-bold mr-0.5 text-black">
-            {Number(sellingPrice).toLocaleString()}
+            {Number(price).toLocaleString()}
           </span>
           원
         </div>
@@ -59,11 +70,12 @@ export default function ProductCard({ product }) {
           <div className="font-bold text-[8pt] pb-2">SIZE</div>
           <div className="absolute hidden group-hover:block z-10 border-t-2 w-full border-gray-200">
             <div className="grid grid-cols-7 text-[8pt] gap-2 py-2 bg-white">
-              {sizeList.map((option) => (
-                <div className={option.isSoldOut && "text-gray-300"}>
-                  {option.size}
-                </div>
-              ))}
+              {sizeOptionsWithStatus &&
+                sizeOptionsWithStatus.map((option) => (
+                  <div className={option.isSoldOut && "text-gray-300"}>
+                    {option.size}
+                  </div>
+                ))}
             </div>
           </div>
         </div>

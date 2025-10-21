@@ -2,11 +2,11 @@ import { Link } from "react-router-dom";
 import { Card } from "./ui/card";
 import clsx from "clsx";
 
-export default function ProductCard({ product, idx }) {
+export default function ProductCard({ product, id }) {
   const { title, price, category, isNew, isBest, saleRate, priceBefore } =
     product || {};
   return (
-    <Link to={`/products/detail/${idx}`}>
+    <Link to={`/products/detail/${id}`}>
       <Card
         className={clsx("font-bold text-lg", {
           "bg-pink-100": category === "women",

@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { products } from "@/data/productsData";
+import { useQuery } from "@tanstack/react-query";
 import clsx from "clsx";
 
 export default function ProductDetail() {
@@ -8,9 +8,30 @@ export default function ProductDetail() {
 
   const [size, setSize] = useState(null);
   const [count, setCount] = useState(1);
-  const nowProduct = products.find((p) => Number(p.idx) === Number(id));
-  const { title, saleRate, price, priceBefore, disabledSizes, sizes } =
-    nowProduct;
+
+  const {
+    data: product,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ["product"],
+    queryFn: async function () {
+      const res = await fetch(`http://localhost:4000/api/products/${id}`);
+      if (!res.ok) {
+        console.log("ERROR");
+        return;
+      }
+      return res.json();
+    },
+    staleTime: 60_000, // 동안 신선
+    refetchOnWindowFocus: true, // fresh하면 안바꾸고 stale 상태일 때만 적용.
+    // 윈도우를 보고 있으면 리패치
+  });
+
+  // const { title, saleRate, price, priceBefore, disabledSizes, sizes } =
+  //   product;
 
   const handleCountPlus = function () {
     setCount(count + 1);
@@ -39,6 +60,12 @@ export default function ProductDetail() {
     }
     setSize(s);
   };
+  let nowProduct = {};
+  if (isLoading) {
+    return <div>로딩중...</div>;
+  } else {
+    nowProduct = product;
+  }
   return (
     <div className="space-y-4">
       <h1 className="text-2xl font-bold">ProductDetail</h1>

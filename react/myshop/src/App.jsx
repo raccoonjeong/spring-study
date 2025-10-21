@@ -1,4 +1,5 @@
 import React, { Suspense, lazy } from "react"; // Suspense: 로딩중화면 보여주기
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Home from "@/pages/Home";
 import NotFound from "@/pages/NotFound";
@@ -73,10 +74,15 @@ function NowLoading() {
     </div>
   );
 }
+
+const queryClient = new QueryClient();
+
 function App() {
   return (
     <Suspense fallback={<NowLoading />}>
-      <RouterProvider router={router} />
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+      </QueryClientProvider>
     </Suspense>
   );
 }

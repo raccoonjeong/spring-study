@@ -35,7 +35,7 @@ function normalizeProduct(p) {
     "title",
     "price",
     "priceArr",
-    "badges",
+    // "badges",
     "sizes",
     "category",
   ];
@@ -126,13 +126,11 @@ async function main() {
           p.price,
           JSON.stringify(p.priceArr),
           JSON.stringify(p.badges),
-
           JSON.stringify(p.sizes),
           p.disabledSizes != null ? JSON.stringify(p.disabledSizes) : null,
           p.category,
           p.priceBefore,
           p.saleRate,
-
           p.isNew ? 1 : 0,
           p.isBest ? 1 : 0,
           p.rating,

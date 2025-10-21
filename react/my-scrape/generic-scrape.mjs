@@ -2,21 +2,23 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { URL as NodeURL } from "node:url";
+// const cheerio = await import("cheerio");
+import * as cheerio from "cheerio";
 
 const config = {
   url: "",
   urls: [
     {
       category: "women",
-      url: "https://www.skecherskorea.co.kr/sub_product/list.php?cate=0002_0065_0012_&filter_size=&filter_color=&filter_func=&filter_price=&filter_heel=&filter_wide=&filter_weight=&filter_info=&orderby=sales_price_DESC&pg=1",
+      url: "https://www.skecherskorea.co.kr/sub_product/list.php?adv=Y&cate=0002_0059_0176_",
     },
     {
       category: "men",
-      url: "https://www.skecherskorea.co.kr/sub_product/list.php?cate=0001_0052_0007_&filter_size=&filter_color=&filter_func=&filter_price=&filter_heel=&filter_wide=&filter_weight=&filter_info=&orderby=sales_price_DESC&pg=1",
+      url: "https://www.skecherskorea.co.kr/sub_product/list.php?adv=Y&cate=0001_0046_0178_",
     },
     {
       category: "kids",
-      url: "https://www.skecherskorea.co.kr/sub_product/list.php?cate=0003_0093_0187_&filter_size=&filter_color=&filter_func=&filter_price=&filter_heel=&filter_wide=&filter_weight=&filter_info=&orderby=sales_price_DESC&pg=1",
+      url: "https://www.skecherskorea.co.kr/sub_product/list.php?adv=Y&cate=0003_0017_0179_",
     },
   ],
   listSelector: ".prod_st",
@@ -27,6 +29,27 @@ const config = {
       key: "title",
       selector: ".con_wrap .tit",
       mode: "text",
+    },
+    {
+      key: "href",
+      selector: "> a",
+      mode: "attr",
+      attr: "href",
+      absolute: true,
+    },
+    {
+      key: "img",
+      selector: "> a img",
+      mode: "attr",
+      attr: "src",
+      absolute: true,
+    },
+    {
+      key: "imgOver",
+      selector: "> a img",
+      mode: "attr",
+      attr: "data-onover",
+      absolute: true,
     },
     {
       key: "priceText",
@@ -45,8 +68,10 @@ const config = {
     },
     {
       key: "badges",
-      selector: ".con_wrap > .icon",
+      selector: ".con_wrap > .icon .ico",
       mode: "arr",
+      all: true, // 노드들 전부 배열로 모으기
+      arrayClean: true,
     },
     {
       key: "sizes",
@@ -68,13 +93,54 @@ const config = {
       mode: "img",
       attr: "src",
     },
+    {
+      key: "starOn",
+      selector: ".tt_star .star i.on",
+      mode: "count",
+    },
+    {
+      key: "starHalf",
+      selector: ".tt_star .star i.half",
+      mode: "count",
+    },
+    {
+      key: "starAll",
+      selector: ".tt_star .star i",
+      mode: "count",
+    },
+    {
+      key: "reviewCount",
+      selector: ".tt_star .no",
+      mode: "int",
+    },
   ],
-  outPrefix: "example",
+  outPrefix: "product",
   dropEmpty: true,
   postProcess,
+  detail: {
+    urlFromField: "href",
+    urlSelector: "> a",
+    urlAttr: "href",
+    delayMs: 150, // 사이트 배려용(선택)
+    fields: [
+      {
+        key: "thumbs",
+        selector: ".swiper-wrapper.list li .re.va_wrap img",
+        mode: "attr",
+        attr: "src",
+        all: true,
+        absolute: true,
+        arrayClean: true,
+      },
+    ],
+    // 상세 페이지 후처리 훅(선택)
+    postProcess: (obj, ctx) => obj,
+  },
 };
 
 function postProcess(item) {
+  if (!item.title || !String(item.title).trim()) return null;
+
   // priceArr = ["139,000", "109,000", "22%"] 형태일 때
   if (Array.isArray(item.priceArr) && item.priceArr.length) {
     const [beforeRaw, nowRaw, rateRaw] = item.priceArr;
@@ -111,6 +177,18 @@ function postProcess(item) {
     const up = item.badges.map((s) => String(s).toUpperCase());
     item.isNew = up.some((t) => t.includes("NEW"));
     item.isBest = up.some((t) => /\bBEST\b/.test(t));
+  }
+
+  // 별점 계산하기
+  if (typeof item.starOn === "number" || typeof item.starHalf === "number") {
+    const on = item.starOn || 0;
+    const half = item.starHalf || 0;
+    const all = item.starAll || on + half || 5;
+    item.rating = on + half * 0.5; // 예: 4.5
+    item.ratingMax = all; // 예: 5
+    delete item.starOn;
+    delete item.starHalf;
+    delete item.starAll;
   }
 
   return item;
@@ -177,6 +255,87 @@ async function fetchHtml(url) {
   return await res.text();
 }
 
+function extractFrom($ctx, $, fields, baseUrl) {
+  const obj = {};
+  for (const f of fields) {
+    const {
+      key,
+      mode = "text",
+      attr,
+      absolute = false,
+      all = false,
+      arrayClean = false,
+      value,
+    } = f;
+    if (!key) continue;
+
+    if (mode === "const") {
+      obj[key] = value;
+      continue;
+    }
+
+    const $nodes = findWithPriority($ctx, $, f);
+
+    if (mode === "count") {
+      obj[key] = $nodes.length;
+      continue;
+    }
+
+    if (!$nodes.length) continue;
+
+    if (all) {
+      const arr = [];
+
+      $nodes.each((__, node) => {
+        const $n = $(node);
+        let val = null;
+        if (mode === "text") val = textOf($, $n);
+        else if (mode === "attr") {
+          const raw = attr ? pickAttr($n, attr) : "";
+          val = absolute ? absUrl(baseUrl, raw) : raw;
+        } else if (mode === "html") val = $n.html()?.trim() || "";
+        else if (mode === "int") {
+          val = toIntKRW(textOf($, $n));
+        } else if (mode === "arr") {
+          const t = textOf($, $n);
+
+          if (t?.length) arr.push(t);
+          val = null;
+        } else val = textOf($, $n);
+
+        if (mode !== "arr") {
+          const ok = Array.isArray(val)
+            ? val.length > 0
+            : val != null && String(val).trim() !== "";
+          if (ok) arr.push(val);
+        }
+      });
+      obj[key] = arrayClean ? Array.from(new Set(arr)) : arr;
+      continue;
+    }
+
+    const $first = $nodes.first();
+    let val = null;
+    if (mode === "text") val = textOf($, $first);
+    else if (mode === "attr") {
+      const raw = attr ? pickAttr($first, attr) : "";
+      val = absolute ? absUrl(baseUrl, raw) : raw;
+    } else if (mode === "html") val = $first.html()?.trim() || "";
+    else if (mode === "int") {
+      val = toIntKRW(textOf($, $first));
+    } else if (mode === "arr") {
+      const t = textOf($, $first);
+      val = t ? t.split(/\s+/).filter(Boolean) : [];
+    } else val = textOf($, $first);
+
+    const shouldSet = Array.isArray(val)
+      ? val.length > 0
+      : val != null && String(val).trim() !== "";
+    if (shouldSet) obj[key] = val;
+  }
+  return obj;
+}
+
 async function scrapeWithConfig() {
   const { urls, listSelector, fields } = config;
   const results = [];
@@ -185,128 +344,86 @@ async function scrapeWithConfig() {
     const url = urls[i].url;
     const category = urls[i].category;
     const html = await fetchHtml(url);
-    const cheerio = await import("cheerio");
+
     const $ = cheerio.load(html);
 
-    const $items = $(listSelector);
+    const items = $(listSelector).toArray();
 
-    $items.each((_, el) => {
+    for (const el of items) {
       const $item = $(el);
-      const obj = {};
 
-      for (const f of fields) {
-        const {
-          key,
-          mode = "text",
-          attr,
-          absolute = false,
-          all = false,
-          arrayClean = false,
-          value, // ← mode: "const" 대비
-        } = f;
-        if (!key) continue;
+      // 1) 목록 필드 추출
+      let obj = extractFrom($item, $, fields, urls[i].url);
 
-        // mode: "const"면 DOM 탐색 없이 바로 값 지정
-        if (mode === "const") {
-          obj[key] = value;
-          continue;
+      // 2) 하드코딩 category 주입
+      if (category !== undefined) obj.category = category;
+
+      // 3) 목록 후처리
+      obj = config.postProcess ? config.postProcess(obj) : obj;
+      if (!obj) continue;
+
+      // 4) 상세 페이지 추출(옵션)
+      if (config.detail) {
+        let detailUrl = null;
+
+        // 4-1) 목록에서 뽑아둔 필드로 URL 결정
+        if (config.detail.urlFromField && obj[config.detail.urlFromField]) {
+          detailUrl = absUrl(
+            urls[i].url,
+            String(obj[config.detail.urlFromField])
+          );
         }
 
-        const $nodes = findWithPriority($item, $, f);
-        if (!$nodes.length && mode !== "img" && mode !== "idx") continue;
-
-        if (all) {
-          const arr = [];
-          $nodes.each((__, node) => {
-            const $n = $(node);
-            let val = null;
-
-            if (mode === "text") {
-              val = textOf($, $n);
-            } else if (mode === "idx") {
-              const aTag = $item.find("a.img_wrap");
-              const href = aTag.attr("href");
-              const match = href?.match(/idx=(\d+)/);
-              const idx = match ? match[1] : null;
-              val = idx;
-            } else if (mode === "img") {
-              const imgSrcList = $item
-                .find("span.re.va_wrap img")
-                .map((i, el) => $(el).attr("src"))
-                .get();
-              val = imgSrcList;
-            } else if (mode === "attr") {
-              const raw = attr ? pickAttr($n, attr) : "";
-              val = absolute ? absUrl(url, raw) : raw;
-            } else if (mode === "html") {
-              val = $n.html()?.trim() || "";
-            } else if (mode === "int") {
-              val = toIntKRW(textOf($, $n));
-            } else if (mode === "arr") {
-              const t = textOf($, $n);
-              const parts = t ? t.split(/\s+/).filter(Boolean) : [];
-              if (parts.length) arr.push(...parts);
-              val = null;
-            } else {
-              val = textOf($, $n);
-            }
-
-            if (mode !== "arr") {
-              const ok = Array.isArray(val)
-                ? val.length > 0
-                : val != null && String(val).trim() !== "";
-              if (ok) arr.push(val);
-            }
+        // 4-2) 필드가 없으면 목록 DOM에서 직접 셀렉터로 시도
+        if (!detailUrl && config.detail.urlSelector) {
+          const $link = findWithPriority($item, $, {
+            selector: config.detail.urlSelector,
           });
-          obj[key] = arrayClean ? Array.from(new Set(arr)) : arr;
-          continue;
+          if ($link.length) {
+            const raw = pickAttr(
+              $link.first(),
+              config.detail.urlAttr || "href|data-href"
+            );
+            detailUrl = absUrl(urls[i].url, raw);
+          }
         }
 
-        const $first = $nodes.first();
-        let val = null;
-        if (mode === "text") {
-          val = textOf($, $first);
-        } else if (mode === "idx") {
-          const aTag = $item.find("a.img_wrap");
-          const href = aTag.attr("href");
-          const match = href?.match(/idx=(\d+)/);
-          const idx = match ? match[1] : null;
-          val = idx;
-        } else if (mode === "img") {
-          const imgSrcList = $item
-            .find("span.re.va_wrap img")
-            .map((i, el) => $(el).attr("src"))
-            .get();
-          val = imgSrcList;
-        } else if (mode === "attr") {
-          const raw = attr ? pickAttr($first, attr) : "";
-          val = absolute ? absUrl(url, raw) : raw;
-        } else if (mode === "html") {
-          val = $first.html()?.trim() || "";
-        } else if (mode === "int") {
-          val = toIntKRW(textOf($, $first));
-        } else if (mode === "arr") {
-          const t = textOf($, $first);
-          val = t ? t.split(/\s+/).filter(Boolean) : [];
-        } else {
-          val = textOf($, $first);
-        }
+        if (detailUrl) {
+          // 사이트 과부하 방지 딜레이(선택)
+          if (config.detail.delayMs) {
+            await new Promise((r) => setTimeout(r, config.detail.delayMs));
+          }
+          try {
+            const dhtml = await fetchHtml(detailUrl);
+            const $d = cheerio.load(dhtml);
+            const $droot = config.detail.rootSelector
+              ? $d(config.detail.rootSelector)
+              : $d.root();
 
-        const shouldSet = Array.isArray(val)
-          ? val.length > 0
-          : val != null && String(val).trim() !== "";
-        if (shouldSet) obj[key] = val;
+            const detailObj = extractFrom(
+              $droot,
+              $d,
+              config.detail.fields || [],
+              detailUrl
+            );
+            obj = config.detail.postProcess
+              ? config.detail.postProcess(
+                  { ...obj, ...detailObj },
+                  { url: detailUrl, $, $d }
+                )
+              : { ...obj, ...detailObj };
+          } catch (e) {
+            console.warn(
+              "[detail] fetch/extract failed:",
+              detailUrl,
+              e.message
+            );
+          }
+        }
       }
 
-      // ★ 하드코딩 category 주입
-      // if (conf.category !== undefined) {
-      obj.category = category;
-      // }
-
-      const finalObj = config.postProcess ? config.postProcess(obj) : obj;
-      if ((!config.dropEmpty || !isEmptyObject(finalObj)) && finalObj.idx)
-        results.push(finalObj);
-    });
+      if (!config.dropEmpty || !isEmptyObject(obj)) results.push(obj);
+    }
   }
 
   return results;
@@ -327,7 +444,7 @@ async function saveResult(items, { outPrefix = "scrape" }) {
   ).padStart(2, "0")}`;
   let host = "site";
   try {
-    host = new NodeURL(url).host.replace(/[:/\\]/g, "_");
+    // host = new NodeURL(url).host.replace(/[:/\\]/g, "_");
   } catch {}
   const file = path.join(dir, `${ts}_${outPrefix}_${host}.json`);
   await fs.writeFile(

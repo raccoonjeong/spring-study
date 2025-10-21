@@ -1,49 +1,69 @@
 import Container from "@/components/Container";
 
 import ProductCard from "@/components/ProductCard";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 // import { mockData } from "@/data/sampleData";
 import { useParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 
 export default function ProductList() {
-  const [products, setProducts] = useState([]);
   const { category } = useParams();
   const [nowSize, setNowSize] = useState(245);
   const [sizeList, setSizeList] = useState([]);
   const isFirst = useRef(true);
 
-  useEffect(() => {
-    let fetchedData = [];
-
-    const fetchData = async function () {
-      const fetched = await fetch("http://localhost:4000/api/products");
-      fetchedData = await fetched.json();
-      const currentCategoryData = fetchedData.filter(
-        (data) => data.category === category
-      );
-
-      const currentSizeList = Array.from(
-        new Set(
-          currentCategoryData
-            .flatMap((data) => data.sizeList)
-            .flatMap((data) => data.size)
-        )
-      ).sort();
-      setSizeList(currentSizeList);
-
-      const currentSizeData = currentCategoryData.filter((p) =>
-        p.sizeList.map((option) => option.size).includes(Number(nowSize))
-      );
-
-      setProducts(currentSizeData);
-      if (isFirst.current) {
-        const center = Math.floor(currentSizeList.length / 2);
-        setNowSize(currentSizeList[center]);
-        isFirst.current = false;
+  const {
+    data: products,
+    isPending,
+    isError,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ["products"],
+    queryFn: async function () {
+      const res = await fetch("http://localhost:4000/api/products");
+      if (!res.ok) {
+        console.log("ERROR");
+        return;
       }
-    };
-    fetchData();
-  }, [category, nowSize]);
+      return res.json();
+    },
+    staleTime: 60_000, // 동안 신선
+    refetchOnWindowFocus: true, // fresh하면 안바꾸고 stale 상태일 때만 적용.
+    // 윈도우를 보고 있으면 리패치
+  });
+
+  // 2. useMemo를 사용하여 데이터 조작 (파생 상태 생성)
+  // products나 isLoading 상태가 변경될 때만 로직 실행
+  const processedProducts = useMemo(() => {
+    if (!products) return [];
+
+    const currentCategoryData = products.filter(
+      (data) => data.category === category
+    );
+
+    const currentSizeList = Array.from(
+      new Set(currentCategoryData.flatMap((data) => data.sizes))
+    ).sort();
+    setSizeList(currentSizeList);
+
+    const currentSizeData = currentCategoryData.filter((p) =>
+      p.sizes.includes(Number(nowSize))
+    );
+
+    if (isFirst.current) {
+      const center = Math.floor(currentSizeList.length / 2);
+      setNowSize(currentSizeList[center]);
+      isFirst.current = false;
+    }
+
+    return currentSizeData;
+  }, [products, nowSize]);
+
+  if (isPending) return <div>상품 정보를 로딩 중입니다...</div>;
+  if (!processedProducts || processedProducts.length === 0)
+    return <div>표시할 상품이 없습니다.</div>;
+
   return (
     <div className="mx-auto w-full max-w-[1200px] px-4">
       <div className="py-8 grid grid-cols-5 gap-8">
