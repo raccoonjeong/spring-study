@@ -1,33 +1,69 @@
 import Button from "@/components/Button";
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { getProduct } from "@/data/sampleData";
 import Counter from "@/components/Counter";
+import { useQuery } from "@tanstack/react-query";
 
 export default function ProductDetail() {
   const { id } = useParams();
   const [nowSize, setNowSize] = useState(null);
-  const [product, setProduct] = useState({
-    id: "",
-    name: "",
-    isNew: "",
-    isBest: "",
-    originalPrice: "",
-    sellingPrice: "",
-    discountRate: "",
-    img: "",
-    starRate: "",
-    reviewCount: "",
-    sizeList: [],
+
+  const {
+    data: product,
+    isPending,
+    isError,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ["products"],
+    queryFn: async function () {
+      const res = await fetch(`http://localhost:4000/api/products/${id}`);
+      if (!res.ok) {
+        console.log("ERROR");
+        return;
+      }
+      return res.json();
+    },
+    staleTime: 60_000, // 동안 신선
+    refetchOnWindowFocus: true, // fresh하면 안바꾸고 stale 상태일 때만 적용.
+    // 윈도우를 보고 있으면 리패치
   });
+
   const [nowCount, setNowCount] = useState(1);
 
   useEffect(() => {
-    const currentProduct = getProduct(id);
-    setProduct(currentProduct);
-    const center = Math.floor(currentProduct.sizeList.length / 2);
-    setNowSize(currentProduct.sizeList[center].size);
-  }, [id]);
+    if (!product) {
+      return;
+    }
+    const center = Math.floor(product.sizes.length / 2);
+    setNowSize(product.sizes[center].size);
+  }, [product]);
+
+  const isAllSoldOut = useMemo(() => {
+    if (!product?.sizes) {
+      return false;
+    }
+    product.sizes?.length === product.disabled?.length;
+  }, [product]);
+
+  const sizeOptionsWithStatus = useMemo(() => {
+    if (!product?.sizes) {
+      return [];
+    }
+    return product.sizes.map((size) => {
+      return {
+        size: size,
+        isSoldOut:
+          product.disabled?.length > 0
+            ? product.disabled.includes(size)
+            : false,
+      };
+    });
+  }, [product]);
+
+  if (isPending) return <div>상품 정보를 로딩 중입니다...</div>;
+  if (!product) return <div>표시할 상품이 없습니다.</div>;
 
   return (
     <div className="mx-auto w-full max-w-[1200px] px-4">
@@ -78,7 +114,7 @@ export default function ProductDetail() {
           <div className="font-bold text-gray-500">{product.name}</div>
           <div className="pb-4 text-xl">
             <span className="font-bold">
-              {Number(product.sellingPrice).toLocaleString()}
+              {Number(product.price).toLocaleString()}
             </span>{" "}
             원
           </div>
@@ -94,7 +130,7 @@ export default function ProductDetail() {
           </div>
           <div className="font-bold">SIZE</div>
           <div className="flex space-x-1">
-            {product.sizeList.map((option, i) => (
+            {sizeOptionsWithStatus.map((option, i) => (
               <Button
                 primary={Number(option.size) === Number(nowSize)}
                 key={i}

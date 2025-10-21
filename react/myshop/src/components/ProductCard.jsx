@@ -1,5 +1,6 @@
 import StarRating from "@/components/StarRating";
 import { Link } from "react-router-dom";
+import { useMemo } from "react";
 
 export default function ProductCard({ product }) {
   const {
@@ -23,11 +24,17 @@ export default function ProductCard({ product }) {
   } = product;
 
   const isAllSoldOut = sizes?.length === disabled?.length;
-  const sizeOptionsWithStatus = sizes
-    ? []
-    : sizes.map((size) => {
-        return { size: size, isSoldOut: disabled.includes(size) };
-      });
+  const sizeOptionsWithStatus = useMemo(() => {
+    if (!sizes) {
+      return [];
+    }
+    return sizes.map((size) => {
+      return {
+        size: size,
+        isSoldOut: disabled?.length > 0 ? disabled.includes(size) : false,
+      };
+    });
+  }, [id]);
 
   return (
     <Link to={`/products/detail/${id}`} data-discover="true">
