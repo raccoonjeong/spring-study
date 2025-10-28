@@ -20,23 +20,59 @@ const normalizeProduct = (row) => ({
   title: row.title,
   priceText: row.priceText,
   price: row.price,
-  img: row.img,
-  imgOver: row.imgOver,
-  rating: row.rating,
-  reviewCount: row.reviewCount,
   priceArr: parseJSON(row.priceArr),
   badges: parseJSON(row.badges),
+  img: row.img,
+  imgHover: row.imgHover,
+  thumbs: row.thumbs,
+  reviewCount: row.reviewCount,
+  rating: row.rating,
   sizes: parseJSON(row.sizes),
-  // disabled/disabledSizes 어느 쪽 컬럼이든 대응
-  disabled: parseJSON(row.disabled ?? row.disabledSizes ?? null),
+  disabledSizes: parseJSON(row.disabledSizes),
   category: row.category,
   priceBefore: row.priceBefore,
   saleRate: row.saleRate,
   isNew: !!row.isNew,
-  // isBest/isBest 어느 쪽 컬럼이든 대응
-  isBest: !!(row.isBest ?? row.isBest),
+  isBest: !!row.isBest,
 });
 
+// GET /api/products?page=1&pageSize=12
+router.get("/", async (req, res, next) => {
+  try {
+    const page = Math.max(1, parseInt(req.query.page ?? "1", 10));
+    const pageSize = Math.min(
+      100,
+      Math.max(1, parseInt(req.query.pageSize ?? "12", 10))
+    );
+    const offset = (page - 1) * pageSize;
+
+    const [[{ total }]] = await pool.query(
+      "SELECT COUNT(*) AS total FROM mall_products"
+    );
+
+    const [rows] = await pool.query(
+      `SELECT *
+       FROM mall_products
+       ORDER BY id ASC
+       LIMIT ? OFFSET ?`,
+      [pageSize, offset]
+    );
+
+    //const totalPages = Math.max(1, Math.ceil(total / pageSize));
+    // res.json({
+    //   page,
+    //   pageSize,
+    //   total,
+    //   totalPages,
+    //   hasPrev: page > 1,
+    //   hasNext: page < totalPages,
+    //   items: rows.map(normalizeProduct),
+    // });
+    res.json(rows.map(normalizeProduct));
+  } catch (e) {
+    next(e);
+  }
+});
 // GET /api/products
 router.get("/", async (req, res, next) => {
   try {

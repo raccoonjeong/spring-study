@@ -1,0 +1,22 @@
+CREATE TABLE IF NOT EXISTS mall_products (
+  id             INT AUTO_INCREMENT PRIMARY KEY,
+  title          VARCHAR(255)          NOT NULL,
+  img            VARCHAR(1024)         NULL,
+  imgOver        VARCHAR(1024)         NULL,
+  priceText      VARCHAR(255)          NULL,
+  price          INT		           NOT NULL,
+  reviewCount    INT                   NOT NULL DEFAULT 0,
+  priceArr       JSON                  NOT NULL, 
+  badges         JSON                  NOT NULL,  
+  sizes          JSON                  NOT NULL,  
+  disabledSizes  JSON                  NULL,      
+  category       VARCHAR(32)           NOT NULL,
+  priceBefore    INT          			NULL,
+  saleRate       INT                   NULL,
+  isNew          TINYINT(1)            NOT NULL DEFAULT 0,
+  isBest         TINYINT(1)            NOT NULL DEFAULT 0,
+  rating         DECIMAL(3,1)          NULL,      
+  ratingMax      TINYINT(1)		  	   NULL,     
+  thumbs         JSON                  NULL,      
+  created_at     TIMESTAMP             NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

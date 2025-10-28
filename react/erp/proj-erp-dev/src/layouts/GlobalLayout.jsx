@@ -2,7 +2,7 @@ import { Outlet } from "react-router-dom";
 import NavBar from "@/components/common/NavBar";
 import ScrollToTop from "@/components/common/ScrollToTop";
 import TopButton from "@/components/common/TopButton";
-import { useCart } from "@/hooks/useCart";
+import useCart from "@/hooks/useCart";
 
 function AuthButton() {
   return (
@@ -14,7 +14,7 @@ function AuthButton() {
 }
 
 export default function GlobalLayout() {
-  const { countItems } = useCart();
+  const { count } = useCart();
   const handleSearch = () => {
     console.log("handleSearch");
   };
@@ -27,13 +27,14 @@ export default function GlobalLayout() {
     { url: "/products/kids", title: "KIDS" },
     { url: "/products/new", title: "NEW" },
     { url: "/products/best", title: "BEST" },
+    { url: "/stores", title: "STORES" },
     { url: "/mgr/product", title: "상품관리", align: "right" }, // 오른쪽 텍스트
     { url: "/mgr/store", title: "매장관리", align: "right" }, // 오른쪽 텍스트
     {
       url: "/cart",
       type: "icon",
       icon: "cart",
-      badge: countItems,
+      badge: count,
       align: "right",
     }, // 오른쪽 아이콘
     { type: "icon", icon: "search", func: handleSearch, align: "right" }, // 오른쪽 버튼
@@ -42,7 +43,6 @@ export default function GlobalLayout() {
 
   return (
     <div className="min-h-dvh flex flex-col relative">
-      {" "}
       {/* dvh: device viewport height*/}
       <header>
         <div className="fixed top-0 inset-x-0 z-50 bg-white h-[60px] border-b px-4">

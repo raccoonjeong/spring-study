@@ -2,7 +2,6 @@ import { Outlet } from "react-router-dom";
 import NavBar from "@/components/common/NavBar";
 import ScrollToTop from "@/components/common/ScrollToTop";
 import TopButton from "@/components/common/TopButton";
-import { useCart } from "@/hooks/useCart";
 
 function AuthButton() {
   return (
@@ -14,7 +13,7 @@ function AuthButton() {
 }
 
 export default function GlobalLayout() {
-  const { countItems } = useCart();
+  const count = 1;
   const handleSearch = () => {
     console.log("handleSearch");
   };
@@ -33,7 +32,7 @@ export default function GlobalLayout() {
       url: "/cart",
       type: "icon",
       icon: "cart",
-      badge: countItems,
+      badge: count,
       align: "right",
     }, // 오른쪽 아이콘
     { type: "icon", icon: "search", func: handleSearch, align: "right" }, // 오른쪽 버튼

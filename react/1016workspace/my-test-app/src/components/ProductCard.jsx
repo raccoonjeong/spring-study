@@ -18,7 +18,8 @@ export default function ProductCard({ product, id }) {
         <div>
           {saleRate ? (
             <div>
-              [{saleRate}%] 할인가 {price}원 / 정가 {priceBefore}
+              <span className="text-red-600 text-border">[{saleRate}%]</span>{" "}
+              할인가 {price}원 / 정가 {priceBefore}
             </div>
           ) : (
             <div>{price}원</div>
